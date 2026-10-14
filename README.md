@@ -52,6 +52,60 @@ codex plugin add nextflow@nextflow-plugin
 The same repository serves both hosts: Codex reads the Claude marketplace and plugin layout,
 and takes its listing (name, logo, starter prompts) from `.codex-plugin/plugin.json`.
 
+### OpenCode
+
+Supports both OpenCode 1.x (`>=1.17.4`) and 2.x (`>=2.0.0`).
+
+From terminal:
+
+```bash
+# OpenCode 2.x
+opencode plugin add opencode-nextflow
+
+# OpenCode 1.x
+opencode plugin opencode-nextflow
+```
+
+Or add to your config file:
+
+```jsonc
+// OpenCode 2.x (opencode.jsonc)
+{
+  "plugins": ["opencode-nextflow"]
+}
+
+// OpenCode 1.x (opencode.json)
+{
+  "plugin": ["opencode-nextflow"]
+}
+```
+
+OpenCode installs it on next startup. In both versions, the plugin registers all 28 skills
+and the hosted Seqera MCP server (`https://mcp.seqera.io/mcp`, OAuth handled by OpenCode —
+run `opencode mcp auth seqera` once). It never overrides your own `seqera` MCP entry.
+
+Options (all optional):
+
+```jsonc
+// OpenCode 2.x
+{
+  "plugins": [
+    {
+      "package": "opencode-nextflow",
+      "options": { "skills": { "seqerakit": false }, "mcp": false }
+    }
+  ]
+}
+
+// OpenCode 1.x
+{
+  "plugin": [["opencode-nextflow", { "skills": { "seqerakit": false }, "mcp": false }]]
+}
+```
+
+`skills: false` disables all bundled skills; `mcp: false` skips the Seqera MCP
+registration. Individual skills can be disabled by name.
+
 ## What's included
 
 | Area | Skills |

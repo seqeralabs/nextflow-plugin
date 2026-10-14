@@ -1,3 +1,5 @@
 .DS_Store
 __pycache__/
 evals/results/
+node_modules/
+*.tgz
