@@ -63,6 +63,10 @@ and takes its listing (name, logo, starter prompts) from `.codex-plugin/plugin.j
 | Nextflow Platform | `launch-workflow` (with shared MCP connection reference), `ce-credentials-setup`, `seqera-data-links`, `seqerakit` |
 | General | `nextflow-development`, `install-nextflow` |
 
+### Seqera co-scientist progress (Claude Code)
+
+When Claude hands a task to the Seqera co-scientist through the MCP server's `co_scientist_*` tools, a band above the prompt shows its state, steps and cost. `/co-scientist`, or the band's Details button, opens a pane with more. The band uses a Claude Code hooks module (`hooks/`) and does nothing in other clients or when the server doesn't offer the co-scientist tools.
+
 ## Licensing
 
 Licensed under the [Apache License, Version 2.0](LICENSE). Third-party attributions are in
