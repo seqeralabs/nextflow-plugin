@@ -10,6 +10,7 @@
   "homepage": "https://github.com/seqeralabs/nextflow-plugin",
   "repository": "https://github.com/seqeralabs/nextflow-plugin",
   "license": "Apache-2.0",
+  "types": "./types/index.d.ts",
   "keywords": [
     "nextflow",
     "seqera",
