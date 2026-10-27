@@ -1,8 +1,7 @@
 export type Status = {
   id: string
   state: 'working' | 'done' | 'failed' | 'cancelled'
-  steps: { seq: number; tool: string; label: string }[]
-  message: string
+  steps: { seq: number; tool: string }[]
   summary: string | null
   cost_cents: number
   cursor: number
@@ -12,19 +11,23 @@ export type PanelState = {
   state: Status['state']
   steps: { seq: number; label: string }[]
   summary: string | null
-  message: string
   cost: string
+}
+
+// Portal sends raw tool names; the band shows them as words.
+export function stepLabel(tool: string): string {
+  const words = tool.replace(/_/g, ' ').trim()
+  return words ? words[0].toUpperCase() + words.slice(1) : 'Working'
 }
 
 export function toPanel(prev: PanelState | undefined, s: Status): PanelState {
   const kept = prev && prev.id === s.id ? prev.steps : []
   const seen = new Set(kept.map(x => x.seq))
-  const added = s.steps.filter(x => !seen.has(x.seq)).map(x => ({ seq: x.seq, label: x.label }))
+  const added = s.steps.filter(x => !seen.has(x.seq)).map(x => ({ seq: x.seq, label: stepLabel(x.tool) }))
   return {
     id: s.id,
     state: s.state,
     summary: s.summary,
-    message: s.message,
     steps: [...kept, ...added],
     cost: `$${(s.cost_cents / 100).toFixed(2)}`,
   }
@@ -60,7 +63,6 @@ export function parseToolResult(result: unknown): Status | null {
     id: s.id,
     state: s.state as Status['state'],
     steps: s.steps ?? [],
-    message: s.message ?? '',
     summary: s.summary ?? null,
     cost_cents: s.cost_cents ?? 0,
     cursor: s.cursor ?? 0,
@@ -84,7 +86,7 @@ export function applyResult(prev: PanelState | undefined, tool: 'start' | 'statu
   if (!v || typeof v !== 'object' || typeof v.id !== 'string') return null
   if (tool === 'reply') {
     const cost = prev && prev.id === v.id ? prev.cost : EMPTY_COST
-    return { id: v.id, state: 'working', steps: [], summary: null, message: '', cost }
+    return { id: v.id, state: 'working', steps: [], summary: null, cost }
   }
   return prev && prev.id === v.id && v.status === 'cancelled' ? { ...prev, state: 'cancelled' } : null
 }

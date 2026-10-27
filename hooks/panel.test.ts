@@ -1,22 +1,22 @@
 import { expect, test } from 'claude-code/testing'
 
-import { applyResult, bandView, dismissOnPrompt, parseToolResult, reshowBand, stepsView, toPanel } from './panel'
+import { applyResult, bandView, dismissOnPrompt, parseToolResult, reshowBand, stepLabel, stepsView, toPanel } from './panel'
 import type { Status } from './panel'
 
-const base: Status = { id: 's1', state: 'working', steps: [], message: '', summary: null, cost_cents: 0, cursor: 0 }
+const base: Status = { id: 's1', state: 'working', steps: [], summary: null, cost_cents: 0, cursor: 0 }
 
 test('steps accumulate across polls and cost shows in dollars', () => {
-  const first = toPanel(undefined, { ...base, steps: [{ seq: 2, tool: 'call_seqera_api', label: 'Calling Seqera Platform' }], cursor: 2 })
+  const first = toPanel(undefined, { ...base, steps: [{ seq: 2, tool: 'call_seqera_api' }], cursor: 2 })
   const done = toPanel(first, { ...base, state: 'done', summary: 'S12 ran out of memory.', cost_cents: 37, cursor: 9 })
-  expect(done.steps.map(s => s.label)).toEqual(['Calling Seqera Platform'])
+  expect(done.steps.map(s => s.label)).toEqual(['Call seqera api'])
   expect(done.cost).toBe('$0.37')
   expect(done.summary).toBe('S12 ran out of memory.')
 })
 
 test('a new thread id resets the steps', () => {
-  const first = toPanel(undefined, { ...base, steps: [{ seq: 1, tool: 'skill', label: 'old' }] })
-  const next = toPanel(first, { ...base, id: 's2', steps: [{ seq: 1, tool: 'skill', label: 'new' }] })
-  expect(next.steps.map(s => s.label)).toEqual(['new'])
+  const first = toPanel(undefined, { ...base, steps: [{ seq: 1, tool: 'old_tool' }] })
+  const next = toPanel(first, { ...base, id: 's2', steps: [{ seq: 1, tool: 'new_tool' }] })
+  expect(next.steps.map(s => s.label)).toEqual(['New tool'])
 })
 
 test('parseToolResult reads JSON text, structured content, rejects errors and non-JSON', () => {
@@ -35,7 +35,7 @@ test('a start result (no steps or cost) parses with defaults', () => {
 })
 
 const text = (o: unknown) => ({ text: JSON.stringify(o) })
-const done = toPanel(undefined, { ...base, state: 'done', summary: 'answer', steps: [{ seq: 1, tool: 't', label: 'L' }], cost_cents: 50 })
+const done = toPanel(undefined, { ...base, state: 'done', summary: 'answer', steps: [{ seq: 1, tool: 't' }], cost_cents: 50 })
 
 test('stepsView: Thinking while working with no steps, hidden when idle and empty', () => {
   expect(stepsView({ ...done, steps: [], state: 'working' })).toBe('thinking')
@@ -46,7 +46,7 @@ test('stepsView: Thinking while working with no steps, hidden when idle and empt
 
 test('reply on the same id starts a new turn, keeping cost', () => {
   const p = applyResult(done, 'reply', text({ id: 's1', run_id: 'r2', cursor: 9 }))
-  expect(p).toMatchObject({ id: 's1', state: 'working', summary: null, message: '', steps: [], cost: '$0.50' })
+  expect(p).toMatchObject({ id: 's1', state: 'working', summary: null, steps: [], cost: '$0.50' })
 })
 
 test('reply for another id starts fresh', () => {
@@ -56,10 +56,10 @@ test('reply for another id starts fresh', () => {
 })
 
 test('cancel marks cancelled and keeps steps', () => {
-  const w = toPanel(undefined, { ...base, steps: [{ seq: 1, tool: 't', label: 'L' }] })
+  const w = toPanel(undefined, { ...base, steps: [{ seq: 1, tool: 't' }] })
   const p = applyResult(w, 'cancel', text({ id: 's1', status: 'cancelled' }))
   expect(p?.state).toBe('cancelled')
-  expect(p?.steps.map(s => s.label)).toEqual(['L'])
+  expect(p?.steps.map(s => s.label)).toEqual(['T'])
 })
 
 test('cancel for another id, not_generating, or errors are ignored', () => {
@@ -77,8 +77,8 @@ test('start/status go through toPanel', () => {
 test('bandView: working shows latest step or Thinking, with cost', () => {
   const w = toPanel(undefined, { ...base, cost_cents: 12 })
   expect(bandView(w, false)).toEqual({ state: 'working', label: 'Thinking…', cost: '$0.12' })
-  const s = toPanel(w, { ...base, steps: [{ seq: 1, tool: 't', label: 'A' }, { seq: 2, tool: 't', label: 'B' }] })
-  expect(bandView(s, false)?.label).toBe('B')
+  const s = toPanel(w, { ...base, steps: [{ seq: 1, tool: 'a' }, { seq: 2, tool: 'search_nfcore_module' }] })
+  expect(bandView(s, false)?.label).toBe('Search nfcore module')
 })
 
 test('bandView: ended states show state + cost until dismissed; null without activity', () => {
@@ -105,4 +105,9 @@ test('reshowBand: only on new thread, state change, or a new turn', () => {
   expect(reshowBand(done, same, 'start')).toBe(true)
   expect(reshowBand(done, same, 'reply')).toBe(true)
   expect(reshowBand(done, same, 'cancel')).toBe(false)
+})
+
+test('step labels come from tool names', () => {
+  expect(stepLabel('call_seqera_api')).toBe('Call seqera api')
+  expect(stepLabel('')).toBe('Working')
 })

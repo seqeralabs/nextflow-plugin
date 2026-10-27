@@ -6,7 +6,6 @@ declare module 'claude-code' {
         state: 'working' | 'done' | 'failed' | 'cancelled'
         steps: { seq: number; label: string }[]
         summary: string | null
-        message: string
         cost: string
       } | null
       bandDismissed: boolean

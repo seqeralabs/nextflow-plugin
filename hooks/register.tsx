@@ -84,7 +84,7 @@ export const register: Register = on => {
             ))}
           </Box>
         )}
-        {p.state === 'failed' && <Text color={RED} wrap="wrap">{p.message}</Text>}
+        {p.state === 'failed' && p.summary && <Text color={RED} wrap="wrap">{p.summary}</Text>}
       </Box>
     )
   })
