@@ -14,9 +14,11 @@ const panel = atom({ plugin: 'nextflow', key: 'coscientist' } as const, null)
 const dismissed = atom({ plugin: 'nextflow', key: 'bandDismissed' } as const, false)
 
 export const register: Register = on => {
-  on('tool.call', { tool: /co_scientist_(start|status|reply|cancel)$/ }, async ($, e, next) => {
+  on('tool.call', { tool: /co_scientist(_status|_cancel)?$/ }, async ($, e, next) => {
     const r = await next(e)
-    const kind = /co_scientist_(\w+)$/.exec(String(e.tool))?.[1] as 'start' | 'status' | 'reply' | 'cancel'
+    const sub = /co_scientist_(status|cancel)$/.exec(String(e.tool))?.[1] as 'status' | 'cancel' | undefined
+    // co_scientist starts a thread, or continues one when given thread_id (steps start over)
+    const kind = sub ?? ((e as { thread_id?: unknown }).thread_id ? 'reply' : 'start')
     let reshow = false
     await update($, panel, prev => {
       const n = applyResult(prev ?? undefined, kind, r)

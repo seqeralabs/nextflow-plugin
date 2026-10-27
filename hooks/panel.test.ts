@@ -111,3 +111,11 @@ test('step labels come from tool names', () => {
   expect(stepLabel('call_seqera_api')).toBe('Call seqera api')
   expect(stepLabel('')).toBe('Working')
 })
+
+test('a follow-up that comes back done starts the steps over and shows the answer', () => {
+  const prev = toPanel(undefined, { ...base, steps: [{ seq: 1, tool: 'old_step' }] })
+  const p = applyResult(prev, 'reply', text({ ...base, state: 'done', summary: 'new answer', steps: [{ seq: 9, tool: 'skill' }], cursor: 9 }))
+  expect(p?.state).toBe('done')
+  expect(p?.summary).toBe('new answer')
+  expect(p?.steps.map(s => s.label)).toEqual(['Skill'])
+})

@@ -78,10 +78,9 @@ export function stepsView(p: PanelState): 'steps' | 'thinking' | 'none' {
 
 // Returns the next panel state for a start/status/reply/cancel tool result, or null for "no change".
 export function applyResult(prev: PanelState | undefined, tool: 'start' | 'status' | 'reply' | 'cancel', result: unknown): PanelState | null {
-  if (tool === 'start' || tool === 'status') {
-    const s = parseToolResult(result)
-    return s && toPanel(prev, s)
-  }
+  const s = parseToolResult(result)
+  if (s && tool !== 'cancel') return toPanel(tool === 'reply' ? undefined : prev, s)
+  if (tool === 'start' || tool === 'status') return null
   const v = unwrap(result) as { id?: unknown; status?: unknown } | null
   if (!v || typeof v !== 'object' || typeof v.id !== 'string') return null
   if (tool === 'reply') {
