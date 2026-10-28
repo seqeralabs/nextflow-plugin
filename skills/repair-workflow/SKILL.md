@@ -92,7 +92,7 @@ Reread the test output, inspect the actual produced artifacts, compare expected 
 - No shadow implementation or copy-back workaround was introduced.
 - The representative test passes, or any remaining limitation is reported precisely.
 
-Use [registry composition](../build-nextflow-pipeline/references/create-workflow/README.md) for new workflows, run-module for a single registry module, [strict syntax compatibility](../migrate-nextflow-code/references/nextflow-26-syntax/README.md) for strict-syntax changes, and [nf-test failure repair](../nf-test/references/repair-nf-test/README.md) for test-specific failures. Consult repair-checklists.md when available.
+Use [registry composition](../build-nextflow-pipeline/references/create-workflow/README.md) for new workflows, run-module for a single registry module, `migrate-nextflow-code` for strict-syntax changes, and [nf-test failure repair](../nf-test/references/repair-nf-test/README.md) for test-specific failures. Consult repair-checklists.md when available.
 
 ## Static diagnostics playbook
 

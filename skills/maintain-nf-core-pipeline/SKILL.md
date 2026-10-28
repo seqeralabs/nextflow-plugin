@@ -91,8 +91,7 @@ the entry workflow and project-owned workflow definitions. By this point the
 residue is genuinely pipeline-specific.
 
 If the residual work is a syntax migration:
-- [strict syntax compatibility](../migrate-nextflow-code/references/nextflow-26-syntax/README.md) — strict-syntax rules for typed processes / channels
-- [boolean parameter compatibility](../migrate-nextflow-code/references/nf-v2-boolean-params/README.md) — boolean-param migration (common v2 failure)
+- `migrate-nextflow-code` — strict syntax and other language migrations
 - [schema migration](../nextflow-schema/references/nf-schema-migration/README.md) — schema updates required by v2
 
 For structural analysis of an unfamiliar pipeline before editing:

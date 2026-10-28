@@ -43,7 +43,7 @@ Video: https://youtu.be/LBB9NueK-vk
 | `multiqc_config.yml` | Accept single-line YAML format — content is identical, only formatting changed. |
 | `modules.json` | Accept updated FastQC / MultiQC SHAs from template. Preserve entries for custom or non-template modules. |
 | `ro-crate-metadata.json` | Take all template changes — file is auto-generated, no manual content to preserve. |
-| Workflow definitions | Accept strict-syntax reformatting. If pipeline has custom logic, ensure it still passes strict syntax — chain [strict syntax compatibility](../../../migrate-nextflow-code/references/nextflow-26-syntax/README.md) if not. |
+| Workflow definitions | Accept strict-syntax reformatting. If pipeline has custom logic, ensure it still passes strict syntax — chain `migrate-nextflow-code` if not. |
 | Contribution guidance | Merge pipeline-specific guidance into the new template version and remove obsolete duplicates. |
 | `.pre-commit-config.yaml` | Accept template's `prek`-compatible config. Run `prek install --overwrite` after merging. |
 
@@ -51,6 +51,6 @@ Video: https://youtu.be/LBB9NueK-vk
 
 - **Run `prek install --overwrite` after merge** to switch the repo's git hooks from `pre-commit` to `prek`.
 - **Webhook config migration is mandatory** — existing pipelines with Slack webhooks need to switch to the `nf-slack` plugin. The template removes the webhook section entirely; don't try to keep it.
-- **Strict syntax is required**, not optional, for tools 4.0+. After merge, run `nextflow lint` and chain [strict syntax compatibility](../../../migrate-nextflow-code/references/nextflow-26-syntax/README.md) / [boolean parameter compatibility](../../../migrate-nextflow-code/references/nf-v2-boolean-params/README.md) / [schema migration](../../../nextflow-schema/references/nf-schema-migration/README.md) if there are residual failures.
+- **Strict syntax is required**, not optional, for tools 4.0+. After merge, run `nextflow lint` and chain `migrate-nextflow-code` / [schema migration](../../../nextflow-schema/references/nf-schema-migration/README.md) if there are residual failures.
 - **No prefix-free `nf-core` commands** — any docs, scripts, or CI invoking `nf-core create`, `nf-core lint`, etc. must be updated to `nf-core pipelines create`, `nf-core pipelines lint`, etc.
 - **`--migrate-pytest` is gone**. If you still have pytest-based tests waiting to migrate to `nf-test`, do that conversion outside the sync PR.

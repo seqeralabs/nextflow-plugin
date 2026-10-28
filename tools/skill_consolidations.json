@@ -257,83 +257,6 @@
     {
       "folds": [
         {
-          "from": "nextflow-26-syntax",
-          "to": "migrate-nextflow-code",
-          "heading": "Strict syntax compatibility reference",
-          "when": "When fixing v2 parser errors or planning staged modernization, consult the version-specific syntax rules and preserve a tested output baseline.",
-          "label": "strict syntax compatibility"
-        },
-        {
-          "from": "nf-v2-boolean-params",
-          "to": "migrate-nextflow-code",
-          "heading": "Boolean parameter compatibility reference",
-          "when": "When CLI boolean flags arrive with the wrong type or do not toggle under strict syntax, check the typed-parameter and schema contract.",
-          "label": "boolean parameter compatibility"
-        },
-        {
-          "from": "nf-migrate-25-04",
-          "to": "migrate-nextflow-code",
-          "heading": "Nextflow 25.04 compatibility reference",
-          "when": "When targeting 25.04 or diagnosing compatibility across that release, use its changelog and scanners without assuming 26.x features.",
-          "label": "25.04 compatibility"
-        }
-      ],
-      "edits": [
-        {
-          "path": "skills/migrate-nextflow-code/SKILL.md",
-          "old": "description: Migrate Nextflow pipeline code to newer language requirements. Use when fixing strict syntax errors, replacing versions channels with topic channels, migrating from `publishDir` to workflow outputs (the `output {}` block), or adding static typing (typed processes/workflows, records, typed params).",
-          "new": "description: Migrate Nextflow pipeline code while preserving behavior. Use for version upgrades including 25.04 compatibility, strict syntax errors, boolean CLI parameter types, topic channels, workflow outputs, and static typing (typed processes/workflows, records, typed params)."
-        },
-        {
-          "path": "skills/migrate-nextflow-code/SKILL.md",
-          "old": "**Requires Nextflow 26.04 or later** (for the `nextflow lint` command and the strict syntax parser, which is the default from 26.04 onward).",
-          "new": "**Resolve the installed and target Nextflow versions first.** The modern examples target 26.04+, where strict syntax is the default. For a 25.04 target, read [25.04 compatibility](references/nf-migrate-25-04/README.md) and its scanners; do not silently upgrade the runtime or apply newer syntax. Check installed help/current official migration notes before using version-dependent features."
-        },
-        {
-          "path": "skills/migrate-nextflow-code/SKILL.md",
-          "old": "| **Strict syntax** | …has strict syntax errors, or asks to run `nextflow lint` to find and fix errors | `strict-syntax.md` |",
-          "new": "| **25.04 compatibility** | …targets 25.04 or crosses that release | [25.04 compatibility](references/nf-migrate-25-04/README.md) |\n| **Boolean CLI params** | …has a string/boolean type mismatch or a flag that does not toggle | [boolean parameter compatibility](references/nf-v2-boolean-params/README.md) |\n| **Strict syntax** | …has parser errors or asks to run `nextflow lint` | `strict-syntax.md`, plus [version-specific rules](references/nextflow-26-syntax/README.md) |"
-        },
-        {
-          "path": "skills/migrate-nextflow-code/SKILL.md",
-          "old": "If the request covers multiple migrations, recommend performing only the first matching migration in the table. The order is also a dependency order: strict syntax -> topic channels -> static typing -> workflow outputs. Do not try to perform multiple migrations at the same time.",
-          "new": "For multiple requested migrations, agree a staged plan based on the target release and project dependencies. Establish a working baseline first, then complete one stage at a time with lint, representative tests and output comparisons. Strict syntax normally comes first; topic channels, types and workflow outputs need only be adopted when requested and supported. A green stage is the stopping point if the next cannot be verified."
-        },
-        {
-          "path": "skills/nf-migrate-25-04/SKILL.md",
-          "old": "Full upstream changelog: `upstream-25-04.md`",
-          "new": "Full upstream changelog: [25.04 release notes](references/upstream-25-04.md). This reference applies to that target release; verify version-dependent commands against installed help."
-        },
-        {
-          "path": "skills/nf-migrate-25-04/SKILL.md",
-          "old": "the user-provided source files with the host's execution tools.",
-          "new": "the user-provided source files with the host's execution tools: [deprecated-pattern scanner](scripts/find_deprecated_patterns.py)."
-        },
-        {
-          "path": "skills/nf-migrate-25-04/SKILL.md",
-          "old": "For shell blocks only, use the bundled `find_shell_blocks.py` helper if available.",
-          "new": "For shell blocks only, use the [shell-block scanner](scripts/find_shell_blocks.py)."
-        },
-        {
-          "path": "skills/nf-migrate-25-04/SKILL.md",
-          "old": "See `upstream-25-04.md` § Miscellaneous for the full list.",
-          "new": "See [25.04 release notes](references/upstream-25-04.md) § Miscellaneous for the full list."
-        },
-        {
-          "path": "skills/nextflow-26-syntax/SKILL.md",
-          "old": "- `nf-v2-boolean-params` — focused deep-dive on boolean CLI params under strict syntax. **Load this skill alone for general v2 migration; pair with `nf-v2-boolean-params` when the task also involves a boolean flag that's not toggling.**",
-          "new": "- `nf-v2-boolean-params` — read the boolean compatibility reference when the task also involves a flag that is not toggling; otherwise keep the syntax investigation scoped to the observed parser errors."
-        },
-        {
-          "path": "skills/nf-v2-boolean-params/SKILL.md",
-          "old": "**Load together with this skill when the task touches multiple v2 grammar rules; load this one alone when the failure is specifically about a boolean CLI param.**",
-          "new": "Read the syntax compatibility reference when the task touches multiple grammar rules; keep boolean-only failures scoped to this reference."
-        }
-      ]
-    },
-    {
-      "folds": [
-        {
           "from": "seqera-mcp",
           "to": "launch-workflow",
           "heading": "MCP connection reference",
@@ -418,26 +341,6 @@
         },
         {
           "path": "skills/migrate-from-snakemake/SKILL.md",
-          "old": "For Seqera operations, use the `seqera-mcp` skill.",
-          "new": "For Seqera operations, read the `seqera-mcp` connection reference."
-        },
-        {
-          "path": "skills/migrate-nextflow-code/SKILL.md",
-          "old": "For Seqera operations, use the `seqera-mcp` skill.",
-          "new": "For Seqera operations, read the `seqera-mcp` connection reference."
-        },
-        {
-          "path": "skills/migrate-nextflow-code/references/nextflow-26-syntax/README.md",
-          "old": "For Seqera operations, use the `seqera-mcp` skill.",
-          "new": "For Seqera operations, read the `seqera-mcp` connection reference."
-        },
-        {
-          "path": "skills/migrate-nextflow-code/references/nf-migrate-25-04/README.md",
-          "old": "For Seqera operations, use the `seqera-mcp` skill.",
-          "new": "For Seqera operations, read the `seqera-mcp` connection reference."
-        },
-        {
-          "path": "skills/migrate-nextflow-code/references/nf-v2-boolean-params/README.md",
           "old": "For Seqera operations, use the `seqera-mcp` skill.",
           "new": "For Seqera operations, read the `seqera-mcp` connection reference."
         },

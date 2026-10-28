@@ -69,5 +69,5 @@ nf-core pipelines lint
 ## Tooling notes
 
 - nf-core ships with `prek` (Rust-based pre-commit replacement) as of tools 4.0. Run `prek install --overwrite` to migrate from `pre-commit`.
-- Strict syntax is required for pipelines targeting tools ≥4.0. See [strict syntax compatibility](../../migrate-nextflow-code/references/nextflow-26-syntax/README.md) for the rules.
+- Strict syntax is required for pipelines targeting tools ≥4.0. Use `migrate-nextflow-code` to migrate.
 - `nf-core.yml` carries the `nf_core_version` field — that's the source of truth for which tools version the pipeline was last synced against.
