@@ -119,3 +119,11 @@ test('a follow-up that comes back done starts the steps over and shows the answe
   expect(p?.summary).toBe('new answer')
   expect(p?.steps.map(s => s.label)).toEqual(['Skill'])
 })
+
+test('accepts thread_id results from the renamed tools', () => {
+  const p = applyResult(undefined, 'start', text({ thread_id: 's9', state: 'done', steps: [], summary: 'answer', cost_cents: 4, cursor: 3 }))
+  expect(p?.id).toBe('s9')
+  expect(p?.state).toBe('done')
+  const c = applyResult(p ?? undefined, 'cancel', text({ thread_id: 's9', status: 'cancelled' }))
+  expect(c?.state).toBe('cancelled')
+})

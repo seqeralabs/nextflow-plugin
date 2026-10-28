@@ -14,11 +14,16 @@ const panel = atom({ plugin: 'nextflow', key: 'coscientist' } as const, null)
 const dismissed = atom({ plugin: 'nextflow', key: 'bandDismissed' } as const, false)
 
 export const register: Register = on => {
-  // Both tool shapes: co_scientist_start/reply, or one co_scientist (a follow-up when given thread_id)
-  on('tool.call', { tool: /co_scientist(_start|_status|_reply|_cancel)?$/ }, async ($, e, next) => {
+  // Any seqera-mcp tool shape: co_scientist_ask/get_status/reply/cancel, the older start/status names,
+  // or one co_scientist tool (a follow-up when given thread_id)
+  on('tool.call', { tool: /co_scientist(_ask|_start|_get_status|_status|_reply|_cancel)?$/ }, async ($, e, next) => {
     const r = await next(e)
-    const sub = /co_scientist_(start|status|reply|cancel)$/.exec(String(e.tool))?.[1] as 'start' | 'status' | 'reply' | 'cancel' | undefined
-    const kind = sub ?? ((e as { thread_id?: unknown }).thread_id ? 'reply' : 'start')
+    const sub = /co_scientist_(ask|start|get_status|status|reply|cancel)$/.exec(String(e.tool))?.[1]
+    const kind: 'start' | 'status' | 'reply' | 'cancel' =
+      sub === 'ask' || sub === 'start' ? 'start'
+      : sub === 'get_status' || sub === 'status' ? 'status'
+      : sub === 'reply' || sub === 'cancel' ? sub
+      : (e as { thread_id?: unknown }).thread_id ? 'reply' : 'start'
     let reshow = false
     await update($, panel, prev => {
       const n = applyResult(prev ?? undefined, kind, r)

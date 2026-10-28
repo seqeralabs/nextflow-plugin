@@ -57,10 +57,11 @@ function unwrap(result: unknown): unknown {
 }
 
 export function parseToolResult(result: unknown): Status | null {
-  const s = unwrap(result) as Partial<Status> | null
-  if (!s || typeof s !== 'object' || typeof s.id !== 'string' || !STATES.includes(s.state as string)) return null
+  const s = unwrap(result) as (Partial<Status> & { thread_id?: string }) | null
+  const id = s && typeof s === 'object' ? (s.thread_id ?? s.id) : undefined
+  if (!s || typeof id !== 'string' || !STATES.includes(s.state as string)) return null
   return {
-    id: s.id,
+    id,
     state: s.state as Status['state'],
     steps: s.steps ?? [],
     summary: s.summary ?? null,
@@ -81,8 +82,9 @@ export function applyResult(prev: PanelState | undefined, tool: 'start' | 'statu
   const s = parseToolResult(result)
   if (s && tool !== 'cancel') return toPanel(tool === 'reply' ? undefined : prev, s)
   if (tool === 'start' || tool === 'status') return null
-  const v = unwrap(result) as { id?: unknown; status?: unknown } | null
-  if (!v || typeof v !== 'object' || typeof v.id !== 'string') return null
+  const raw = unwrap(result) as { id?: unknown; thread_id?: unknown; status?: unknown } | null
+  const v = raw && typeof raw === 'object' ? { ...raw, id: raw.thread_id ?? raw.id } : null
+  if (!v || typeof v.id !== 'string') return null
   if (tool === 'reply') {
     const cost = prev && prev.id === v.id ? prev.cost : EMPTY_COST
     return { id: v.id, state: 'working', steps: [], summary: null, cost }
