@@ -19,7 +19,11 @@ Create complete Nextflow workflows by composing validated modules from the [Next
 
 Modules are published under namespaces (e.g. `nf-core/fastqc`), and these skills compose modules from any of them.
 
-**Requires Nextflow 26.04 or later** (for the `nextflow module` commands used during validation).
+**Requires Nextflow 26.04 or later** (for the `nextflow module` commands used during validation). Including workflow modules requires **Nextflow 26.10 or later**.
+
+Registry modules come in two kinds (shown as `Kind:` by `nextflow module view`):
+- **Process modules** — one tool, e.g. `nf-core/star/align`
+- **Workflow modules** — a reusable subworkflow chaining several modules, e.g. `nf-core/fastq_align_star` (STAR alignment + samtools sort/index/stats)
 
 **NEVER write a wrapper workflow just to run/test a single module.**
 
@@ -54,9 +58,15 @@ run-module
 ### Step 1: Identify Modules and Propose Plan
 
 1. Use `nextflow module search <term>` to find Registry modules for each processing step
-2. Use `nextflow module view <name>` to understand inputs/outputs of each module
-3. **Present a plan to the user** with:
-   - List of identified modules
+2. **Look for workflow modules** that already cover a chain of steps. `nextflow module search` rarely ranks them high enough to appear, so query the registry API with the `kind=Workflow` filter:
+   ```bash
+   curl -s "https://registry.nextflow.io/api/v1/modules?query=align%20reads%20STAR&kind=Workflow&limit=10" \
+     | python3 -c 'import json,sys; [print(r["name"], "-", r["description"]) for r in json.load(sys.stdin)["results"]]'
+   ```
+   When a workflow module matches a chain of steps in the plan, use it instead of hand-wiring the same process modules.
+3. Use `nextflow module view <name>` to understand inputs/outputs of each module (for a workflow module: its `take:` inputs in call order and its `emit:` outputs)
+4. **Present a plan to the user** with:
+   - List of identified modules, marking each as process or workflow module
    - Processing sequence (which module runs first, second, etc.)
    - Data flow between modules (outputs → inputs)
 
@@ -77,6 +87,7 @@ run-module
    - **Install and run with test data**: Invoke `run-module`
    - **Verify outputs** - confirm expected data is produced
    - Only proceed to next module after current one succeeds
+   - **Untyped workflow modules** (most nf-core ones) fail `nextflow module run` with "cannot be executed directly because it is not typed". This is expected, not a failure to fix: do not stop to ask the user. Record it in the validation record as "validated in Step 4" and move on. It gets validated by the end-to-end run in Step 4.
 3. Record ALL module run commands and their outputs in a validation record selected by the user
 4. If a command fails, stop and show the user the command used and the output generated before trying something else
 
@@ -106,7 +117,9 @@ Only after ALL modules run successfully:
    }
    ```
 
-3. **Run the complete workflow using the same test data** to validate end-to-end
+   Workflow modules use the same include syntax (`include { FASTQ_ALIGN_STAR } from 'nf-core/fastq_align_star'`) and are called with positional arguments in their `take:` order, as listed by `nextflow module view`. For untyped workflow modules, the input descriptions from `nextflow module view` are approximate. Read the installed `modules/<namespace>/<name>/main.nf` to see which process each input feeds, and build the channel shape that process expects (e.g. `[meta, index]` tuples). On first run, Nextflow installs each one under `modules/<namespace>/<name>/` together with its dependencies in a nested `modules/` directory. Commit the `modules/` directory with the pipeline.
+
+3. **Run the complete workflow using the same test data** to validate end-to-end. This is the validation step for any untyped workflow module skipped in Step 3.
 
 ## Critical Guidelines
 
@@ -124,7 +137,8 @@ Only after ALL modules run successfully:
 - For locally modified modules, use the actual module reference provided by the user's project rather than assuming its location.
 
 ### Module Selection
-- Prefer single-tool modules over sub-workflows
+- Prefer an existing workflow module over hand-wiring the process modules it already chains together
+- Find workflow modules via the registry API `kind=Workflow` filter (see Step 1); `nextflow module search` rarely surfaces them
 - Do not write wrapper workflows to test single modules - use `run-module` instead
 - Use `nextflow module search` to find modules, then `nextflow module view` for details
 
@@ -159,8 +173,8 @@ These skills contain detailed instructions for their specific tasks and ensure c
 ## Quick Reference
 
 ```
-Step 1: Identify modules → Propose plan to user
+Step 1: Identify process + workflow modules → Propose plan to user
 Step 2: Wait for user agreement
-Step 3: Validate ALL modules ONE BY ONE with test data
+Step 3: Validate ALL modules ONE BY ONE with test data (untyped workflow modules: defer to Step 4)
 Step 4: Compose final workflow (only after Step 3 succeeds)
 ```
