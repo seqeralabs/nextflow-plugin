@@ -8,6 +8,10 @@ A Claude Code and Codex plugin of agent skills ([Agent Skills spec](https://agen
 - Releasing: bump `version` in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `.codex-plugin/plugin.json` together.
 - After editing `.github/workflows/`, run `npx actions-up` and `zizmor`.
 
+## Optional lint hook
+
+`hooks/hooks.json` is a Claude Code Stop hook. It runs `nextflow lint` once per turn on uncommitted `.nf` and `.config` files, and only after `NEXTFLOW_LINT_HOOK=1` or a `.claude/nextflow-lint-hook` file is present. Leave it on Stop so it sees the finished edit, and keep the opt-in check so lint runs only for people who enable it.
+
 ## Writing skills
 
 - Write for any skills-compatible agent: describe actions in plain terms, without host-specific tool names, `allowed-tools`, or `${CLAUDE_PLUGIN_ROOT}` paths.
