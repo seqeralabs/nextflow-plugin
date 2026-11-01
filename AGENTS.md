@@ -15,6 +15,10 @@ A Claude Code and Codex plugin of agent skills ([Agent Skills spec](https://agen
 - Include registry modules as Nextflow-managed modules (`from 'nf-core/fastqc'`); use local paths only for locally modified modules.
 - Nextflow uses calendar versioning (`YY.MM.PATCH`), so `26.04.0` is newer than `25.10.1`. Pin with `NXF_VER`.
 
+## Optional finish lint
+
+`hooks/hooks.json` is a Claude Code Stop hook. It runs `nextflow lint` on uncommitted `.nf` and `.config` files when a turn finishes. It stays off until `NXF_LINT_ON_STOP=1` (also `true` or `yes`). See the README for the settings snippet.
+
 ## Keep in sync
 
 When changing one of these, update every skill that repeats it:

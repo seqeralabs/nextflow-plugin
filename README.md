@@ -75,6 +75,29 @@ Installing skills this way does not configure the Seqera MCP server. For skills 
 Nextflow Platform (e.g. `launch-workflow`), add `https://mcp.seqera.io/mcp` to your agent's
 MCP configuration.
 
+## Optional finish lint (Claude Code)
+
+`hooks/hooks.json` registers a [Stop hook](https://code.claude.com/docs/en/hooks) that runs
+`nextflow lint` once, when Claude finishes a turn, on uncommitted `.nf` and `.config` files
+in the git work tree. File edits during the turn do not run it.
+
+The hook is installed with the plugin and stays idle until you opt in. Add this to
+`~/.claude/settings.json` or the project's `.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "NXF_LINT_ON_STOP": "1"
+  }
+}
+```
+
+Restart Claude Code after saving. `1`, `true`, or `yes` enables it. The hook does nothing
+when `nextflow` is not on `PATH`, the working directory is not a git checkout, or no
+`.nf` or `.config` file is uncommitted. Uncommitted Nextflow files that were already dirty
+are included. When lint fails, the output is returned to Claude to fix. A turn that is
+already continuing because of this hook does not lint again.
+
 ## What's included
 
 | Area | Skills |
