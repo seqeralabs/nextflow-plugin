@@ -15,6 +15,10 @@ A Claude Code and Codex plugin of agent skills ([Agent Skills spec](https://agen
 - Include registry modules as Nextflow-managed modules (`from 'nf-core/fastqc'`); use local paths only for locally modified modules.
 - Nextflow uses calendar versioning (`YY.MM.PATCH`), so `26.04.0` is newer than `25.10.1`. Pin with `NXF_VER`.
 
+## Optional language server
+
+`.lsp.json` and `scripts/nextflow-language-server.sh` are optional live diagnostics for editors and agents. Skills do not call them and do not require a language server. Validation stays `nextflow lint` (26.10+ type checking). Enable the server by putting `nextflow-lsp` on `PATH` or setting `NEXTFLOW_LSP_JAR` to `language-server-all.jar` (Java 17+).
+
 ## Keep in sync
 
 When changing one of these, update every skill that repeats it:

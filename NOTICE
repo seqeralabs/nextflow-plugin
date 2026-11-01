@@ -12,7 +12,7 @@ the Apache License, Version 2.0:
 
 - nextflow-io/agent-skills (https://github.com/nextflow-io/agent-skills)
   Skills: create-workflow, install-nextflow, launch-workflow,
-  migrate-nextflow-code, run-module; scripts/nextflow-*.sh
+  migrate-nextflow-code, run-module
   License: licenses/nextflow-agent-skills-Apache-2.0.txt
 
 - nextflow-development skill (bio-research skills)
