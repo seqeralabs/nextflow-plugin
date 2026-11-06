@@ -20,4 +20,5 @@ A Claude Code and Codex plugin of agent skills ([Agent Skills spec](https://agen
 When changing one of these, update every skill that repeats it:
 
 - Nextflow version requirements: 26.04+ for `nextflow module`, `auth` and `launch`; 26.10+ for workflow modules and `nextflow lint` type checking. Stated in `install-nextflow`, `run-module`, `launch-workflow`, `migrate-nextflow-code` and the `build-nextflow-pipeline` create-workflow reference.
+- Compute onboarding shared by `onboard-slurm` and `onboard-lsf`: the connection-method table, credential steps (SSH, managed identity, Tower Agent) and work-directory group permissions. All five `onboard-*` skills share the workspace step, the never-handle-secrets rule and the hand-off to `launch-workflow`; the backend routing list appears in `launch-workflow` and `ce-credentials-setup`.
 - Registry module guidance shared by `run-module` and the create-workflow reference: the `kind=Workflow` registry query, untyped workflow module handling, and the Wave+Conda config block.

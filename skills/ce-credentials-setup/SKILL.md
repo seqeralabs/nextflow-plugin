@@ -39,6 +39,8 @@ Load this skill when the user wants to:
 
 Read the [MCP connection](../launch-workflow/references/seqera-mcp/README.md) connection reference for discovery and authentication. This skill owns provider prerequisites and compute readiness.
 
+For end-to-end onboarding of a specific backend — cloud or cluster prerequisites, the credential, the compute environment and a test run — use the dedicated skill: `onboard-aws-batch`, `onboard-google-batch`, `onboard-azure-batch`, `onboard-slurm` or `onboard-lsf`. This skill stays the quick reference for Seqera Compute, Kubernetes and CE troubleshooting.
+
 ## General Workflow
 
 1. **Identify platform** — ask which cloud/cluster (seqera-compute, aws-batch, k8s, etc.)
