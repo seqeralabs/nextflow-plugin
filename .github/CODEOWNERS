@@ -1,0 +1,4 @@
+# Ben Sherman owns the Nextflow code migration skill.
+# After https://github.com/seqeralabs/nextflow-plugin/pull/10 he agreed to be
+# tagged on updates under this path. No other paths have an owner yet.
+/skills/migrate-nextflow-code/ @bentsherman
