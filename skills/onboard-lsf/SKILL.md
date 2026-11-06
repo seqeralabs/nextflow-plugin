@@ -36,7 +36,7 @@ Use `search_seqera_api` to find the exact operation names (e.g. "list workspaces
 | **SSH credential** | Seqera SSHes to the login node with **one shared** key | a single user or a service account |
 | **Tower Agent** | An agent on the cluster opens an outbound connection to Seqera; no inbound SSH | the login node isn't reachable from the internet |
 
-SSH and managed identity need the login node to accept inbound SSH from Nextflow Platform (check Seqera's published IP addresses with the cluster admins). Tower Agent only needs outbound HTTPS.
+SSH and managed identity need the login node to accept inbound SSH from Nextflow Platform — confirm with the cluster admins (ask Seqera support for the current source IPs if the firewall needs an allow-list). Tower Agent only needs outbound HTTPS.
 
 ## Step 3: Check the Cluster
 
@@ -52,11 +52,12 @@ curl -sI https://api.cloud.seqera.io | head -1   # outbound to Seqera (use the E
 ```
 
 Requirements:
-- **Nextflow on the cluster.** Docs list 21.02.0-edge as the floor; recommend a current release. If it's missing, use `the `install-nextflow` skill` on the cluster. It must be on `PATH` for the shell the head job runs in — confirm with `ssh <login-node> 'which nextflow'` or load it via a module in the CE's pre-run script.
+- **Nextflow on the cluster.** Docs list 21.02.0-edge as the floor; recommend a current release. If it's missing, use the `install-nextflow` skill on the cluster. It must be on `PATH` for the shell the head job runs in — confirm with `ssh <login-node> 'which nextflow'` or load it via a module in the CE's pre-run script.
 - **Compute nodes can submit jobs.** The head job runs on a compute node and calls `bsub` itself:
   ```bash
   bsub -q <head-queue> -I 'bsub -V && bjobs'
   ```
+  If interactive jobs aren't allowed on that queue, submit a batch job instead and read the output: `bsub -q <head-queue> -o test.out 'bsub -q <compute-queue> hostname; bjobs'`.
 - **Outbound HTTPS from the head job's node** to Seqera, so Nextflow can report progress.
 - **Shared filesystem** visible from login and compute nodes for the work and launch directories.
 
@@ -67,8 +68,8 @@ LSF sites differ in how memory limits are interpreted, and Nextflow has to reque
 ```bash
 badmin showconf mbd | grep -E 'LSF_UNIT_FOR_LIMITS|LSB_JOB_MEMLIMIT|RESOURCE_RESERVE_PER_TASK'
 # or, if badmin isn't allowed:
-grep -E 'LSF_UNIT_FOR_LIMITS|LSB_JOB_MEMLIMIT' $LSF_ENVDIR/lsf.conf
-grep -E 'RESOURCE_RESERVE_PER_TASK' $LSF_ENVDIR/lsbatch/*/configdir/lsb.resources 2>/dev/null
+grep -E 'LSF_UNIT_FOR_LIMITS|LSB_JOB_MEMLIMIT|RESOURCE_RESERVE_PER_TASK' \
+  $LSF_ENVDIR/lsf.conf $LSF_ENVDIR/lsbatch/*/configdir/lsb.params 2>/dev/null
 ```
 
 Map them to the CE fields:
@@ -79,12 +80,14 @@ Map them to the CE fields:
 | **Per job memory limits** | `LSB_JOB_MEMLIMIT=Y` | on if `Y` — memory is a limit for the whole job, not per slot |
 | **Per task reserve** | `RESOURCE_RESERVE_PER_TASK=Y` | on if `Y` — memory reservation is per task (slot) |
 
-These correspond to Nextflow's `executor.perJobMemLimit` and `executor.perTaskReserve` settings. Getting them wrong makes jobs either request far too much memory (stuck pending) or get killed for exceeding limits. If the values can't be read, ask the cluster admins.
+**Per job memory limits** and **Per task reserve** correspond to Nextflow's `executor.perJobMemLimit` and `executor.perTaskReserve` (Nextflow docs: reference/config/executor). Nextflow also auto-detects both from `$LSF_ENVDIR/lsf.conf` when that variable is set; explicit settings override detection. By default (per-core mode) Nextflow divides the `memory` request by `cpus` for `-M`; `perTaskReserve` divides `rusage[mem]` by `cpus`. The Seqera docs don't say how Platform applies **Unit for memory limits**, so set it to the cluster's `LSF_UNIT_FOR_LIMITS` (LSF's default is `KB`).
+
+Getting them wrong makes jobs either request far too much memory (stuck pending) or get killed for exceeding limits. If the values can't be read, ask the cluster admins.
 
 Pick with the user:
 - **Head queue** — queue for the long-running Nextflow head job (low CPU, long run limit; check `bqueues -l <queue>` for `RUNLIMIT`).
 - **Compute queue** — default queue for tasks (pipelines can override per process with `queue`).
-- **Work directory** — absolute path on shared storage, e.g. `/scratch/<user>/seqera/work`. It must exist already. `$TW_AGENT_WORKDIR` and `$TW_AGENT_USER` are expanded for Tower Agent CEs.
+- **Work directory** — absolute path on shared storage, e.g. `/scratch/<user>/seqera/work`. Create it before the first run: the docs state Tower Agent doesn't create directories, and pre-creating it lets you set group permissions. `$TW_AGENT_WORKDIR` and `$TW_AGENT_USER` are expanded for Tower Agent CEs.
 - **Launch directory** — optional; defaults to the work directory.
 
 For **managed identities**, every user must share a Linux group that can write the work directory:
@@ -105,49 +108,60 @@ All three hold or derive from a secret the user controls, so the **user** create
    ssh-keygen -t ed25519 -f ~/.ssh/seqera_hpc
    ssh-copy-id -i ~/.ssh/seqera_hpc.pub <user>@<login-node>
    ```
-2. Workspace > **Credentials** > **Add credentials** > Provider **SSH** > paste the private key (including the `BEGIN`/`END` lines) and passphrase.
+2. Org workspace > **Credentials** > **Add credentials** (personal workspace: user menu > **Your credentials** > **Add credentials**) > Name (alphanumeric, `-`, `_`), Provider **SSH**, paste the private key (including the `-----BEGIN/END OPENSSH PRIVATE KEY-----` lines, no extra lines or spaces) and passphrase > **Add**.
 
-The key is shared by everyone in the workspace — all runs use that one cluster identity.
+The key is shared by everyone in the workspace — all runs use that one cluster identity. The SSH credential stores only the key and passphrase; the Linux username goes on the CE.
 
 **Managed identity** (organization owner)
-1. Organization > **Managed identities** > **Add managed identity** > Provider **IBM LSF**, Hostname (login node FQDN), Port (default 22).
-2. Each user adds their own Linux username, SSH private key, and passphrase on that managed identity. Users show as "Missing" until they do.
+1. Organization > **Managed identities** tab > **Add managed identity**: a unique **Cluster name**, Provider **IBM LSF**, **Hostname** (login node FQDN), **Port** (default 22) > **Add cluster**.
+2. **Edit** the identity > **Users** tab > **Add credentials**: each user (or an org owner for them) adds their **Linux username**, **SSH private key**, and **Passphrase**. Users show as **Missing** until then. At least one user's credentials must be added before the identity can be used in a CE.
 
-**Tower Agent**
-1. Workspace > **Credentials** > **Add credentials** > Provider **Tower Agent**. Choose a connection ID; toggle **Shared agent** if all workspace members should use it.
-2. Copy the run snippet from the credential's **Usage** section. On the cluster, the user runs the agent with a Seqera access token in `TOWER_ACCESS_TOKEN` and the same connection ID, optionally `--work-dir=<path>`.
-3. The agent must stay running (e.g. in `tmux`, `screen`, or a systemd user service). If it stops, launches fail.
+**Tower Agent** — complete these in order; the agent must be running before the CE is created, because Platform validates the CE by running a test command through it.
+1. Personal access token: user menu > **Your tokens** > **Add token**; the user copies it immediately and keeps it out of the chat.
+2. Workspace > **Credentials** > **Add credentials** > Provider **Tower Agent**; accept or enter the **Agent connection ID** (it must match exactly). Turn on **Shared agent** only if one agent should serve all workspace members — all jobs then run as the agent's Linux user. For per-user identity, leave it off and have each user run their own agent.
+3. On the login node:
+   ```bash
+   curl -fSL https://github.com/seqeralabs/tower-agent/releases/latest/download/tw-agent-linux-x86_64 > tw-agent && chmod +x tw-agent
+   mkdir -p /scratch/$USER/seqera/work   # default is ~/work, but home quotas are usually small
+   ```
+4. In `tmux new -s tower-agent`, the user runs (their token never goes through the chat):
+   ```bash
+   export TOWER_ACCESS_TOKEN=<token>
+   ./tw-agent <connection-id> --work-dir=/scratch/$USER/seqera/work
+   ```
+   For Seqera Enterprise add `--url=<api-endpoint>` or set `TOWER_API_ENDPOINT` (default `https://api.cloud.seqera.io`). Detach with Ctrl-b d.
+5. Keep it running (`tmux`, `screen`, or a systemd user service) and restart it after login-node reboots. If it stops, launches fail.
 
-List credentials and record the `credentialsId`.
+For SSH or Tower Agent, list workspace credentials and record the `credentialsId`. For a managed identity, list the organization's managed identities and record the `managedIdentityId` — the CE takes `managedIdentityId`, not `credentialsId`. API provider IDs: `ssh` (keys `privateKey`, `passphrase`) and `tw-agent` (keys `connectionId`, `shared`, optional `workDir`).
 
 ## Step 5: Create the Compute Environment
 
 Look up the create-CE schema with `search_seqera_api` (platform `lsf-platform`). Build the config and **show it to the user before submitting**:
 
-| Field | Value |
-|---|---|
-| Name | e.g. `lsf-<cluster>` |
-| Platform | IBM LSF |
-| Credentials | `credentialsId` from Step 4 |
-| Work directory | absolute path from Step 3 |
-| Launch directory | optional |
-| Login hostname | login node hostname or IP (SSH only; managed identity gets it from the identity; not used with Tower Agent) |
-| Username / port | SSH credential, if the schema has them: cluster username and SSH port (default 22) |
-| Head queue name | head queue |
-| Compute queue name | compute queue |
-| Unit for memory limits / Per job memory limits / Per task reserve | from the memory settings table |
-| Nextflow queue size | max jobs Nextflow keeps submitted at once — match the cluster's per-user job limit |
-| Head job submit options | `bsub` options for the head job, e.g. `-W 168:00 -n 2 -R "rusage[mem=8GB]"` (adjust the mem value to the cluster's unit); optionally applied to compute jobs; can't be overridden at launch |
-| Pre-run script | e.g. `module load nextflow java` if Nextflow comes from environment modules |
-| Environment variables | e.g. `NXF_OPTS=-Xms1g -Xmx6g` for the head job |
+| Field | API field | Value |
+|---|---|---|
+| Name | `name` | e.g. `lsf-<cluster>` |
+| Platform | `platform` | `lsf-platform` |
+| Credentials | `credentialsId` or `managedIdentityId` | from Step 4 |
+| Work directory | `workDir` | absolute path from Step 3 |
+| Launch directory | `launchDir` | optional |
+| Login hostname | `hostName` | login node hostname or public IP; the form may hide or prefill it depending on the credential type |
+| Username / port | `userName`, `port` | SSH credential: the cluster Linux username and SSH port (default 22). Managed identity takes the username from each user's identity |
+| Head queue name | `headQueue` | head queue |
+| Compute queue name | `computeQueue` | compute queue |
+| Unit for memory limits / Per job memory limits / Per task reserve | `unitForLimits`, `perJobMemLimit`, `perTaskReserve` | from the memory settings table |
+| Nextflow queue size | `maxQueueSize` | max jobs Nextflow keeps submitted at once — match the cluster's per-user job limit |
+| Head job submit options | `headJobOptions`, `propagateHeadJobOptions` | `bsub` options for the head job, e.g. `-W 168:00 -n 2 -R "rusage[mem=8GB]"` (adjust the mem value to the cluster's unit); optionally applied to compute jobs too; can't be overridden at launch |
+| Pre-run script | `preRunScript` | under **Staging options**, e.g. `module load nextflow java` if Nextflow comes from environment modules |
+| Environment variables | `environment` (`head` / `compute` booleans) | Name, Value, and Target (**Head job** / **Compute job** / both), e.g. `NXF_OPTS=-Xms1g -Xmx6g` targeted to the head job. They can't be edited after creation; put secrets in pipeline secrets, not here |
 
-Container engine: tasks need Singularity/Apptainer (most HPC) or Docker on compute nodes. Set it in the CE's global Nextflow config, e.g. `apptainer.enabled = true`.
+Container engine: tasks need Singularity/Apptainer (most HPC) or Docker on compute nodes. Set it under **Staging options** > global Nextflow config (`nextflowConfig`), e.g. `apptainer.enabled = true`; launch-time config can override it.
 
-UI path: workspace > **Compute Environments** > **Add compute environment** > **IBM LSF**.
+UI path: workspace > **Compute environments** > **Add compute environment** (older docs: **New environment**) > choose **IBM LSF** in the **Platform** drop-down.
 
 ## Step 6: Verify
 
-1. Run a test pipeline: hand off to `the `launch-workflow` skill` with `https://github.com/nextflow-io/hello` on the new CE.
+1. Run a test pipeline: hand off to the `launch-workflow` skill with `https://github.com/nextflow-io/hello` on the new CE.
 2. If the run never starts: SSH to the login node with the same key/user and check `bjobs -u <user>`; confirm the head queue accepts jobs and `nextflow` is on `PATH`.
 3. Jobs stuck `PEND` with a memory reason (`bjobs -p`): the memory unit or per-job/per-task settings don't match the cluster.
 4. Tasks killed with `TERM_MEMLIMIT`: same settings, or the process memory directive is too low.
@@ -160,6 +174,6 @@ UI path: workspace > **Compute Environments** > **Add compute environment** > **
 3. **READ the cluster's memory settings** (`LSF_UNIT_FOR_LIMITS`, `LSB_JOB_MEMLIMIT`, `RESOURCE_RESERVE_PER_TASK`) and set the three CE memory fields to match — never guess them.
 4. **CHECK that compute nodes can run `bsub`** — the head job submits tasks from inside the cluster.
 5. **CHECK `nextflow` is on PATH** for non-interactive shells, or load it in the pre-run script.
-6. **CREATE the work directory first** — Seqera and the agent don't create it.
+6. **CREATE the work directory first** — Tower Agent doesn't create directories, and pre-creating it lets you set group permissions.
 7. **SHOW the CE config** to the user before creating it.
 8. **VERIFY** — the CE is only onboarded once a test pipeline succeeds.

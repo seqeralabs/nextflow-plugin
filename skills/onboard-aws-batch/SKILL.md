@@ -74,18 +74,18 @@ Offer a lifecycle rule that deletes intermediate files under the work prefix aft
 
 Write the policy to a local file (e.g. `seqera-forge-policy.json`) and create it as a **managed** policy. Inline user policies cap at 2048 characters and the full policy won't fit.
 
-**Forge mode** — use the full policy from the docs. Get the current version from the docs page (download link: `https://docs.seqera.io/assets/files/aws-batch-full-policy-21552c5a558545c07707257a720b6167.json` — if it 404s, copy it from the "IAM" section of the AWS Batch page). It grants:
+**Forge mode** — use the full policy from the docs. Its source file is `https://raw.githubusercontent.com/seqeralabs/docs/master/platform-cloud/docs/compute-envs/_policies/aws-batch-full-policy.json` (the same file as the **Download** link on the AWS Batch docs page). It grants:
 
-- `batch:*` management on `TowerForge-*` compute environments and job queues, plus `Describe*` and job submit/cancel/terminate
-- `ec2:` launch template management and `Describe*` (for dropdowns)
-- `iam:PassRole` conditioned on `batch.amazonaws.com`, `ec2.amazonaws.com`, `ecs-tasks.amazonaws.com`
-- `iam:` role and instance-profile management on `TowerForge-*`
+- Batch create/update/delete/tag on `TowerForge-*` compute environments and job queues; `DescribeComputeEnvironments`, `DescribeJobDefinitions`, `DescribeJobQueues`, `DescribeJobs` on `*`; cancel/register/submit/tag/terminate on job definitions, `TowerForge-*` queues and jobs
+- `ec2:` launch template management, plus specific `ec2:Describe…` actions (VPCs, subnets, security groups, images, instance types, key pairs) for the form dropdowns
+- `iam:PassRole` on `*`, limited to `batch.amazonaws.com`, `ec2.amazonaws.com`, `ecs-tasks.amazonaws.com`. If you scope it to role ARNs, include `TowerForge-*` and the Fargate/execution roles, and keep `ecs-tasks.amazonaws.com` — otherwise head job definition creation fails
+- optional `iam:` role and instance-profile management on `TowerForge-*` — needed only when Forge creates the roles
 - `logs:` read access, `s3:Get*`/`List*`/`PutObject`, `ssm:GetParameters` on `/aws/service/ecs/*`
 - optional FSx, EFS, Secrets Manager (`tower-*`), `ec2:GetConsoleOutput`, and lineage SNS/S3 (`seqera-lineage-*`) statements
 
-Forge-created resources always start with `TowerForge-`; that prefix can't be changed, so leave the resource scoping on it.
+Forge-created resources always start with `TowerForge-`; that prefix can't be changed, so leave the resource scoping on it. If the user tightens the policy, Forge still needs `batch:DescribeJobQueues` and `batch:DescribeComputeEnvironments`.
 
-**Manual mode** — minimum Batch permissions: `batch:DescribeJobs`, `batch:DescribeJobDefinitions`, `batch:RegisterJobDefinition`, `batch:SubmitJob`, `batch:CancelJob`, `batch:TagResource`, `batch:TerminateJob`, plus `batch:DescribeJobQueues` (only for the queue dropdown), `logs:` read access, and S3 access on the work bucket.
+**Manual mode** — minimum Batch permissions: `batch:DescribeJobs`, `batch:DescribeJobDefinitions`, `batch:RegisterJobDefinition`, `batch:SubmitJob`, `batch:CancelJob`, `batch:TagResource`, `batch:TerminateJob`, plus `batch:DescribeJobQueues` (only for the queue dropdown), `logs:` read access, and S3 access on the work bucket. Manual mode also needs the Batch queues, Batch compute environments, instance/execution roles, and a launch template or AMI with the AWS CLI installed, created first per https://docs.seqera.io/platform-cloud/enterprise/advanced-topics/manual-aws-batch-setup.
 
 Offer to tighten the S3 statement to the work bucket (and any input/output buckets) instead of `*`. Studios and Data Explorer need read/write on each bucket they use.
 
@@ -95,15 +95,20 @@ aws iam create-policy --policy-name seqera-forge-policy --policy-document file:/
 
 ### 3c. IAM role (Role mode — recommended)
 
-Role mode uses no static keys. Seqera assumes the role with an **External ID** that Seqera generates when you create the credential, so the order matters:
+Role mode uses no static keys. Platform generates an **External ID** when you save a Role-mode credential, and that credential needs the role ARN, so the order is:
 
-1. Create the credential in Nextflow Platform first in Role mode (Step 4) — or start it in the UI — to get the External ID.
-2. Create the role with the trust policy shown in the docs/Seqera UI. It trusts Seqera's platform role and requires `sts:ExternalId` to equal the generated value; it also allows `sts:TagSession`. **Copy the trusted principal ARN from the docs or the Platform credential form — don't type it from memory.**
-3. Attach the policy:
+1. Write the trust policy from the docs (AWS Batch page, "IAM role-based credential creation") with `<EXTERNAL_ID>` left as a placeholder. For Seqera Cloud it trusts `arn:aws:iam::161471496260:role/SeqeraPlatformCloudAccessRole` with `sts:AssumeRole` (conditioned on `sts:ExternalId`) and `sts:TagSession`. Copy the JSON from the docs rather than retyping it; Enterprise installs trust their own Platform role instead.
+2. Create the role and attach the policy:
    ```bash
    aws iam create-role --role-name seqera-platform-role --assume-role-policy-document file://seqera-trust-policy.json
    aws iam attach-role-policy --role-name seqera-platform-role --policy-arn arn:aws:iam::<account-id>:policy/seqera-forge-policy
    ```
+3. Create the Role-mode credential with that role ARN (Step 4) and read back the generated External ID.
+4. Put the External ID into the trust policy and apply it:
+   ```bash
+   aws iam update-assume-role-policy --role-name seqera-platform-role --policy-document file://seqera-trust-policy.json
+   ```
+   Until this is done, Platform can't assume the role. Pre-flight checks can't detect a missing External ID — it shows up at first launch.
 
 ### 3c (alternative). IAM user (Keys mode)
 
@@ -116,8 +121,8 @@ The **user** creates the access key (IAM > Users > seqera-platform > Security cr
 
 ## Step 4: Create the Platform Credential
 
-- **Role mode** — the credential holds no secret, so you may create it via the API: provider `aws`, the role ARN as `assumeRoleArn`. Look up the exact request body with `search_seqera_api` ("create credentials"). Read back the generated External ID and put it in the trust policy (Step 3c).
-- **Keys mode** — the credential holds a secret. Ask the user to add it in Nextflow Platform themselves: workspace > **Credentials** > **Add credentials** > Provider **AWS** > paste Access key and Secret key (optionally an Assume role ARN). Never ask them to paste keys into the chat.
+- **Role mode** — the credential holds no secret, so you may create it via the API (`platform_create_credentials`; confirm the body with `search_seqera_api`): query `workspaceId=<id>&useExternalId=true`, body `provider: "aws"`, `keys: {"mode": "role", "assumeRoleArn": "<role-arn>"}`. Without `useExternalId=true` no External ID is generated. Then describe the credential and read `keys.externalId` for Step 3c.4.
+- **Keys mode** — the credential holds a secret. Ask the user to add it in Nextflow Platform themselves: workspace > **Credentials** > **Add credentials** > Provider **AWS** (or the CE form's **Credentials** drop-down > **+**), **AWS credential mode: Keys**, then paste Access key and Secret key. If they also set **Assume role**, the optional **Generate External ID** switch appears; the IAM user then needs `sts:AssumeRole` on that role and the role must trust the user. Never ask them to paste keys into the chat.
 
 Then list credentials and record the new `credentialsId`.
 
@@ -125,30 +130,33 @@ Then list credentials and record the new `credentialsId`.
 
 Look up the create-CE request schema with `search_seqera_api` ("create compute environment", platform `aws-batch`). Build the config from Step 2 and **show it to the user before submitting**. Key fields:
 
-| Field | Value |
-|---|---|
-| Name | e.g. `aws-batch-<region>-spot` (alphanumeric, `-`, `_`) |
-| Platform | `aws-batch` |
-| Credentials | `credentialsId` from Step 4 |
-| Region | from Step 2; must match bucket / EFS / FSx |
-| Work directory | `s3://<bucket>/work` (or EFS/FSx mount path ending in `/work`) |
-| Wave / Fusion v2 | enabled (Fusion requires Wave) |
-| Fast instance storage | with Fusion v2, use NVMe instance types (e.g. `c6id`, `m6id`, `r6id`) |
-| Forge: type | `SPOT` or `EC2` (On-Demand); Seqera adds an On-Demand queue for the head job when Spot |
-| Forge: max CPUs | from Step 2 |
-| Forge: Fargate head job | optional; requires Fusion v2 and Spot; not with EFS/FSx |
-| Forge: GPU | NVIDIA only; also set GPU instance types in Advanced options |
-| Manual: head queue / compute queue | existing Batch job queue names |
-| Head job CPUs / memory | memory in MiB, minimum 3584 (4096 with Fargate) |
-| VPC / subnets / security groups | blank uses defaults; private subnets need NAT for Studios and image pulls |
-| Dispose resources | on (deletes Forge resources when the CE is deleted) |
+| Field | API field | Value |
+|---|---|---|
+| Name | `name` | e.g. `aws-batch-<region>-spot` (alphanumeric, `-`, `_`) |
+| Platform | `platform` | `aws-batch` |
+| Credentials | `credentialsId` | from Step 4 |
+| Region | `region` | from Step 2; must match bucket / EFS / FSx |
+| Work directory | `workDir` | `s3://<bucket>/work` (or EFS/FSx mount path ending in `/work`) |
+| Wave / Fusion v2 | `waveEnabled`, `fusion2Enabled` | enabled (Fusion requires Wave) |
+| Fast instance storage | `nvnmeStorageEnabled` (sic) | Forge + Fusion v2 only; leave Instance types empty so Platform picks NVMe families, or list NVMe types; never `optimal` |
+| Forge: type | `forge.type` | `SPOT` or `EC2` (On-Demand); Platform adds an On-Demand queue for the head job when Spot |
+| Forge: max CPUs | `forge.maxCpus` | from Step 2 |
+| Forge: instance types | `forge.instanceTypes` | optional, up to 20 |
+| Forge: Fargate head job | `forge.fargateHeadEnabled` | optional; requires Wave + Fusion v2 and Spot; not with EFS/FSx; Studios not supported; use EC2 for GPU, custom AMI, or >16 vCPUs |
+| Forge: Graviton | `forge.arm64Enabled` | optional; requires Fargate head job (so Spot), Wave and Fusion v2; not with GPUs |
+| Forge: GPU | `forge.gpuEnabled` | NVIDIA only; also set GPU instance types |
+| Forge: EFS / FSx | `forge.efsId`/`efsMount`/`efsCreate`, `forge.fsxMount`/`fsxSize` | only if not using S3 |
+| Forge: VPC / subnets / security groups | `forge.vpcId`, `forge.subnets`, `forge.securityGroups` | blank uses the region's defaults; private subnets need a NAT gateway (or equivalent) for outbound access, which Studios requires |
+| Forge: dispose resources | `forge.disposeOnDeletion` | on (deletes Forge resources when the CE is deleted) |
+| Manual: head queue / compute queue | `headQueue`, `computeQueue` | existing Batch job queue names; `cliPath` if the AWS CLI isn't at the default path |
+| Head job CPUs / memory | `headJobCpus`, `headJobMemoryMb` | MiB, minimum 3584 (4096 with Fargate; Fargate needs a valid CPU/memory combination); empty means 3584 (or 4096) MiB per CPU; also caps Studio session size |
 
 The UI path is workspace > **Compute Environments** > **Add compute environment** > **AWS Batch**, if the user would rather fill the form.
 
 ## Step 6: Verify
 
-1. Poll the CE (describe compute env) until status is `AVAILABLE`. `ERRORED` includes a message — common causes: missing `iam:PassRole`, wrong External ID in the trust policy, bucket in a different region, the 50-job-queue-per-account Batch quota.
-2. Run a test pipeline. Hand off to `the `launch-workflow` skill` with `https://github.com/nextflow-io/hello` on the new CE.
+1. Poll the CE (describe compute env) until status is `AVAILABLE`. `ERRORED` or `INVALID` carries a message — common causes: missing `iam:PassRole`, the credential lacking read/write on the work directory, bucket in a different region, the 50-job-queue-per-account Batch quota. A missing External ID in the trust policy passes pre-flight checks and only fails at launch.
+2. Run a test pipeline: hand off to the `launch-workflow` skill with `https://github.com/nextflow-io/hello` on the new CE.
 3. If jobs sit in `RUNNABLE`, check Max CPUs, instance types available in the region, and EC2 vCPU quotas (Spot and On-Demand quotas are separate).
 
 ## Critical Rules
@@ -158,6 +166,6 @@ The UI path is workspace > **Compute Environments** > **Add compute environment*
 3. **MATCH regions** — bucket, EFS/FSx, and CE must be in the same region.
 4. **USE a managed policy**, not an inline user policy (2048-character limit).
 5. **KEEP the `TowerForge-` scoping** in Forge policies; the prefix is fixed.
-6. **COPY trust policy principals and policy JSON from the docs or Seqera UI** — never reconstruct account IDs from memory.
+6. **FINISH the trust policy** — create the role, then the credential, then write the generated External ID back into the trust policy. Copy trust policy and IAM policy JSON from the docs; never retype account IDs.
 7. **SHOW the CE config** to the user before creating it.
 8. **VERIFY** — the CE is only onboarded once it is `AVAILABLE` and a test pipeline succeeds.

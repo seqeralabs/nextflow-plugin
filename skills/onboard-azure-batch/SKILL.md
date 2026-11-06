@@ -40,7 +40,7 @@ Use `search_seqera_api` to find the exact operation names (e.g. "list workspaces
 | Networking | default or a VNet subnet | default unless policy requires a VNet |
 | Wave + Fusion v2 | on/off | **on** |
 
-The two credential types are not interchangeable: a CE created with one can't switch to the other.
+The two credential types authenticate differently and don't share access; pick one per CE up front (Entra if you need a subnet or managed identity).
 
 Check the Azure CLI:
 
@@ -62,6 +62,8 @@ az storage account create --name <storageacct> --resource-group <rg> --location 
 az storage container create --name <container> --account-name <storageacct> --auth-mode login
 ```
 
+`--auth-mode login` needs the signed-in user to hold Storage Blob Data Contributor on the account; otherwise create the container in the portal (Storage account > **+ Container**).
+
 Requirements from the docs: storage account key access **enabled**, public access from all networks (Forge can't create compute with restricted networking, and disabling public access isn't supported), Microsoft-managed encryption keys only.
 
 ### 3b. Batch account
@@ -71,7 +73,11 @@ az batch account create --name <batchacct> --resource-group <rg> --location <reg
   --storage-account <storageacct>
 ```
 
-It must use pool allocation mode **Batch service** (the default) and allow **Shared Key** authentication.
+For Batch Forge it must use pool allocation mode **Batch service** (the default); Manual pools can also use User Subscription. It must allow **Shared Key** authentication — check with:
+
+```bash
+az batch account show -n <batchacct> -g <rg> --query allowedAuthenticationModes
+```
 
 ### 3c. Quotas
 
@@ -79,20 +85,22 @@ New Batch accounts often can't create VMs until quota is raised. Check:
 
 ```bash
 az batch account show --name <batchacct> --resource-group <rg> \
-  --query "{pools:poolQuota, jobs:activeJobAndJobScheduleQuota, dedicatedCores:dedicatedCoreQuota, lowPriCores:lowPriorityCoreQuota, perFamily:dedicatedCoreQuotaPerVmFamilyEnforced}"
+  --query "{pools:poolQuota, jobs:activeJobAndJobScheduleQuota, dedicatedCores:dedicatedCoreQuota, lowPriCores:lowPriorityCoreQuota, perFamilyEnforced:dedicatedCoreQuotaPerVmFamilyEnforced, perFamily:dedicatedCoreQuotaPerVmFamily}"
 ```
+
+If `perFamilyEnforced` is true, check the entry for the chosen series (e.g. `standardEDv5Family`).
 
 Needs:
 - **Pools** — Forge creates two per CE (`tower-pool-<id>-head` and `-worker`).
 - **Active jobs** — each running Nextflow process uses one Batch job per pipeline run.
 - **Dedicated vCPUs for the chosen VM family** — at least the concurrent CPUs you want.
 
-If too low, the user raises them in the portal: Batch account > **Quotas** > **Request quota increase**. This can take a support ticket and some time.
+The docs' suggested starting quotas: **Pools per Batch account** 50, **Active jobs and job schedules per Batch account** 100, and dedicated vCPUs for the series (e.g. **EDv5 Series** 192). If too low, the user raises them in the portal: Batch account > **Quotas** > **Request quota increase** > Quota type **Batch**. This can take a support ticket and some time.
 
 ### 3d. Entra service principal (Entra credential only)
 
 ```bash
-az ad sp create-for-rbac --name seqera-platform --skip-assignment
+az ad sp create-for-rbac --name seqera-platform   # assigns no role by default
 ```
 
 This prints a client secret. **Don't run it yourself** — have the user run it in their own terminal (or create the app registration in the portal) and keep the secret out of the chat. Then assign roles with the app's client ID (`az ad sp list --display-name seqera-platform --query "[].appId" -o tsv`):
@@ -106,11 +114,14 @@ az role assignment create --assignee <client-id> --role "Azure Batch Data Contri
 
 Plus, only when used:
 - **Network Contributor** (or a custom role with `Microsoft.Network/virtualNetworks/subnets/join/action`) on the VNet, if the CE uses a Subnet ID.
-- **Managed Identity Operator** on each managed identity attached to pools.
+- **Managed Identity Operator** on each managed identity attached to pools — without it Platform can't attach the identity:
+  ```bash
+  az role assignment create --assignee <client-id> --role "Managed Identity Operator" --scope <identity-resource-id>
+  ```
 
 ### 3e. Managed identity (optional, Entra only)
 
-Lets pool nodes reach Storage and ACR without keys. Needs Nextflow 24.06.0-edge or later.
+Lets pool nodes reach Storage and ACR without keys; recommended with Entra. Needs Nextflow 24.06.0-edge or later. One identity can serve both pools, or use separate head and worker identities to keep worker RBAC narrower.
 
 ```bash
 az identity create --name seqera-pool-identity --resource-group <rg> --location <region>
@@ -127,7 +138,7 @@ Both Azure credential types contain secrets (account keys or a client secret), s
 - **Shared key** tab — Batch account name + key (Batch account > Keys), Blob Storage account name + key (Storage account > Access keys).
 - **Entra** tab — Batch account name, Blob Storage account name, Tenant ID, Client ID, Client secret.
 
-Give them the account names to fill in. Never ask for keys or secrets in the chat. Then list credentials and record the `credentialsId`. Warn them not to rotate the storage key in Nextflow Platform after the CE is created.
+Give them the account names to fill in. Never ask for keys or secrets in the chat. Then list credentials and record the `credentialsId`. In the API, Shared key credentials have provider `azure` and Entra credentials `azure_entra` (not `azure-cloud`). Warn them not to rotate the storage key in Nextflow Platform after the CE is created.
 
 ## Step 5: Create the Compute Environment
 
@@ -135,27 +146,27 @@ Look up the create-CE schema with `search_seqera_api` (platform `azure-batch`). 
 
 **Forge mode:**
 
-| Field | Value |
-|---|---|
-| Name | e.g. `azure-batch-<region>` |
-| Platform | `azure-batch` |
-| Credentials | `credentialsId` from Step 4 |
-| Region | e.g. `eastus` |
-| Work directory | `az://<container>/work` |
-| Wave / Fusion v2 | enabled; for production use `Standard_E16d_v5` or larger with ≥200 GB local temp disk; no Premium SSDv2/Ultra disks for Fusion |
-| VMs type | default `Standard_D4_v3`; pick a `d` size |
-| VMs count | max VMs under autoscale |
-| Autoscale | on (scales 0 → VMs count) |
-| Head VM type / CPUs / memory | optional; memory in MiB, minimum 3584 |
-| Subnet ID | optional, Entra only: `/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.Network/virtualNetworks/<vnet>/subnets/<subnet>` |
-| Managed identity | head and worker pool client ID + resource ID (resource IDs required for Forge) |
-| Container registry credentials | ACR in the same region, if private images |
-| Dispose resources | on (deletes pools when the CE is deleted) |
-| Max wallclock time | default `7d`, up to 180 days |
-| Token duration | SAS lifetime — must exceed the longest expected run |
-| Job cleanup | defaults: delete tasks on completion, terminate jobs on completion |
+| Field | API field | Value |
+|---|---|---|
+| Name | `name` | e.g. `azure-batch-<region>` |
+| Platform | `platform` | `azure-batch` |
+| Credentials | `credentialsId` | from Step 4 |
+| Region | `region` | e.g. `eastus` |
+| Work directory | `workDir` | `az://<container>/work` |
+| Wave / Fusion v2 | `waveEnabled`, `fusion2Enabled` | enabled; for production use `Standard_E16d_v5` or larger with ≥200 GB local temp disk; no Premium SSDv2/Ultra disks for Fusion |
+| VMs type | `forge.vmType` | set it explicitly — pick a `d` size such as `Standard_E16d_v5` (the docs list `Standard_D4_v3` as the default, the API spec `Standard_D4s_v3`) |
+| VMs count | `forge.vmCount` | max VMs under autoscale |
+| Autoscale | `forge.autoScale` | on (scales 0 → VMs count) |
+| Head job CPUs / memory | `headJobCpus`, `headJobMemoryMb` | optional; memory in MiB, minimum 3584 |
+| Subnet ID | `subnetId` | optional, Entra only: `/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.Network/virtualNetworks/<vnet>/subnets/<subnet>`. With a subnet, Forge pools default to **no public IPs** (`usePrivateAddress: true`), so the subnet needs outbound connectivity such as a NAT gateway; set `usePrivateAddress: false` to keep public IPs |
+| Managed identity | head: `managedIdentityClientId` + `managedIdentityHeadResourceId`; worker: `managedIdentityPoolClientId` + `managedIdentityPoolResourceId` | resource IDs required for Forge |
+| Container registry credentials | `forge.containerRegIds` | ACR in the same region, if private images |
+| Dispose resources | `forge.disposeOnDeletion` | on (deletes pools when the CE is deleted) |
+| Max wallclock time | `jobMaxWallClockTime` | default `7d`, up to 180 days |
+| Token duration | `tokenDuration` | **default `12h`** — set it at least as long as the longest expected run (e.g. match Max wallclock `7d`) |
+| Job cleanup | `deleteJobsOnCompletionEnabled`, `deleteTasksOnCompletion`, `terminateJobsOnCompletion` | defaults: delete jobs **off**, delete tasks **on**, terminate jobs **on** |
 
-**Manual mode** — the user creates a pool first (portal: Batch account > Pools > Add) following https://docs.seqera.io/platform-cloud/enterprise/advanced-topics/manual-azure-batch-setup. Key pool settings: image `microsoft-dsvm` / `ubuntu-hpc` / `2204`, Docker-compatible container config, autoscale, task slots = vCPUs, and — without Fusion — a start task that installs `azcopy` on every node. Then set Config mode **Manual** and the **Compute pool name**.
+**Manual mode** — use it for low-priority/spot nodes or custom images (Forge creates dedicated nodes only). The user creates a pool first (portal: Batch account > Pools > Add) following https://docs.seqera.io/platform-cloud/compute-envs/azure-batch#create-a-nextflow-compatible-azure-batch-pool. Key pool settings: image `microsoft-dsvm` / `ubuntu-hpc` / `2204`, Docker-compatible container config, autoscale with a 5-minute evaluation interval, task slots = vCPUs, and — without Fusion — a start task that installs `azcopy` on every node (resource file `https://nf-xpack.seqera.io/azcopy/linux_amd64_10.8.0/azcopy` saved as `azcopy`). Manual mode doesn't attach a subnet, so set the VNet/subnet on the pool itself. Then set Config mode **Manual**, the **Compute pool name**, and the **Managed identity client ID** if the pool has a user-assigned identity. Manual CEs use a **Jobs cleanup policy** (Always / Never / On success) instead of the Forge toggles.
 
 Environment variables can't be edited after creation; use Seqera pipeline secrets for secrets.
 
@@ -163,9 +174,9 @@ UI path: workspace > **Compute Environments** > **Add compute environment** > **
 
 ## Step 6: Verify
 
-1. Poll the CE until status is `AVAILABLE`. On `ERRORED`, read the message — typical causes: no vCPU/pool quota, Storage public access disabled, missing Network Contributor on the VNet, access-key credential used with a Subnet ID.
-2. Run a test pipeline: hand off to `the `launch-workflow` skill` with `https://github.com/nextflow-io/hello` on the new CE.
-3. If pool nodes fail to start or tasks can't pull images, check outbound access from the subnet to container registries (quay.io, docker.io), Azure Storage, and Seqera.
+1. Poll the CE until status is `AVAILABLE`. On `ERRORED` or `INVALID`, read the message (for `INVALID`, check the credential record — rotating the Batch or Storage key in Azure invalidates a Shared key credential). Typical causes: no vCPU/pool/job quota, Storage public access disabled, missing Network Contributor on the VNet, missing Managed Identity Operator on the identity, no outbound path (NAT) from a private subnet.
+2. Run a test pipeline: hand off to the `launch-workflow` skill with `https://github.com/nextflow-io/hello` on the new CE.
+3. If pool nodes fail to start or tasks can't pull images, check outbound access from the subnet to container registries (quay.io, docker.io), Azure Storage, and Seqera (e.g. via a NAT gateway on the subnet).
 
 ## Critical Rules
 
@@ -173,7 +184,8 @@ UI path: workspace > **Compute Environments** > **Add compute environment** > **
 2. **NEVER handle secrets** — account keys and client secrets go straight from the user into the Seqera UI, never through the chat or the API. Don't run commands that print secrets.
 3. **MATCH regions** — Storage account and Batch account in the same region.
 4. **CHECK quota before creating the CE** — new Batch accounts often have none.
-5. **USE Entra** when a VNet subnet or managed identity is needed; access keys support neither.
-6. **KEEP Storage public network access and shared key access enabled** for Forge.
-7. **SHOW the CE config** to the user before creating it.
-8. **VERIFY** — the CE is only onboarded once it is `AVAILABLE` and a test pipeline succeeds.
+5. **SET Token duration** to cover the longest run — the `12h` default cuts off longer pipelines.
+6. **USE Entra** when a VNet subnet or managed identity is needed; access keys support neither.
+7. **KEEP Storage public network access and shared key access enabled** for Forge.
+8. **SHOW the CE config** to the user before creating it.
+9. **VERIFY** — the CE is only onboarded once it is `AVAILABLE` and a test pipeline succeeds.
