@@ -65,6 +65,17 @@ Selecting the compute environment:
 3. If only one is available, propose it and ask for confirmation.
 4. Confirm the selected compute environment with the user before launching.
 
+If no suitable compute environment exists, onboard one first with the matching skill:
+
+| Target | Skill |
+|--------|-------|
+| AWS Batch | `onboard-aws-batch` |
+| Google Cloud Batch | `onboard-google-batch` |
+| Azure Batch | `onboard-azure-batch` |
+| Slurm cluster | `onboard-slurm` |
+| IBM Spectrum LSF cluster | `onboard-lsf` |
+| Seqera Compute or Kubernetes | `ce-credentials-setup` |
+
 ## Step 3: Ensure the Pipeline Is in a Remote Git Repository
 
 Nextflow Platform launches pipelines from a remote Git URL — it cannot launch directly from a local path. Verify the pipeline directory is a Git repository connected to a remote on GitHub (or a compatible host like GitLab or Bitbucket).

@@ -1,6 +1,6 @@
 {
   "name": "nextflow",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Build, migrate, test, debug, and run Nextflow pipelines with Nextflow Platform, Wave, and nf-core.",
   "icon": "./assets/nextflow-uploaded-logo.png",
   "author": {

@@ -40,7 +40,7 @@
       "path": "skills/ce-credentials-setup/SKILL.md",
       "source": "portal/backend/src/skills/ce-credentials-setup/SKILL.md",
       "source_sha256": "179ed50da55eb509086eaf9e3228d063bd4d8334c0f8fff38c0f31e0e327e4e9",
-      "bundled_sha256": "f08f46ce58afa13ca971bd974578a388fa6e86851b8263ce2c1db5acb34e27e1",
+      "bundled_sha256": "222b38b620effb7a3032212159902e20b690935fd754dbcd41718f2b60fba4df",
       "override": true
     },
     {
