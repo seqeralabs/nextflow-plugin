@@ -86,6 +86,18 @@ MCP configuration.
 | Nextflow Platform | `launch-workflow` (with shared MCP connection reference), `ce-credentials-setup`, `seqera-data-links`, `seqerakit` |
 | General | `nextflow-development`, `install-nextflow` |
 
+## Optional language server
+
+Skills validate Nextflow with `nextflow lint` (type checking on Nextflow 26.10+). They do not start or require a language server.
+
+`.lsp.json` is an optional hook for editors and agents that want live diagnostics on `.nf`, `.nf.test`, and `.config` files. It runs `scripts/nextflow-language-server.sh`, which starts the [Nextflow language server](https://github.com/nextflow-io/language-server) only when one of these is already available:
+
+1. `nextflow-lsp` on `PATH` (the `bin/nextflow-lsp` binary from a standalone release bundle)
+2. `nlsp` on `PATH`
+3. `NEXTFLOW_LSP_JAR` pointing at `language-server-all.jar`, run with Java 17+
+
+Download a release from the language-server repository (the 26.10 line matches current `nextflow lint` type checking). If none of the above is set, the server does not start and `nextflow lint` remains the check.
+
 ## Licensing
 
 Licensed under the [Apache License, Version 2.0](LICENSE). Third-party attributions are in
