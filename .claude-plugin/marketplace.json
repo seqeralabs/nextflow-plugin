@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "nextflow",
-      "source": "./",
+      "source": "./plugins/nextflow",
       "description": "Build, migrate, test, debug, and run Nextflow pipelines with Nextflow Platform, Wave, and nf-core.",
       "version": "0.2.2",
       "author": {

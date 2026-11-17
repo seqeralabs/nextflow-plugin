@@ -36,7 +36,7 @@ class ConsolidationTests(unittest.TestCase):
         self.plan.write_text(json.dumps({"groups": [{"folds": [{"from": "old", "to": "owner", "heading": "Original task playbook", "when": "When doing the original task.", "label": "original task"}]}]}))
 
     def run_cli(self):
-        return subprocess.run([sys.executable, "-I", str(CLI), "--root", str(self.root), "--plan", str(self.plan)], capture_output=True, text=True)
+        return subprocess.run([sys.executable, "-I", str(CLI), "--root", str(self.root), "--sources", str(self.root / "sources.json"), "--plan", str(self.plan)], capture_output=True, text=True)
 
     def test_moves_assets_and_routes_callers_with_original_provenance(self):
         result = self.run_cli()

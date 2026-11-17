@@ -40,7 +40,10 @@ jobs:
         run: claude plugin validate --strict .
 
       - name: Validate plugin manifest
-        run: claude plugin validate --strict .claude-plugin/plugin.json
+        run: claude plugin validate --strict plugins/nextflow/.claude-plugin/plugin.json
+
+      - name: Validate skills
+        run: claude plugin validate --strict plugins/nextflow/skills
 
       - name: Install from the local marketplace
         env:
@@ -49,7 +52,7 @@ jobs:
           claude plugin marketplace add ./
           claude plugin install nextflow@nextflow-plugin
           claude plugin details nextflow@nextflow-plugin | tee details.txt
-          expected=$(ls skills | wc -l)
+          expected=$(ls plugins/nextflow/skills | wc -l)
           grep -q "Skills (${expected})" details.txt
           grep -q "MCP servers (1)  seqera" details.txt
 
@@ -65,6 +68,6 @@ jobs:
           grep -q "nextflow@nextflow-plugin  installed, enabled" codex-plugins.txt
           codex mcp list | tee codex-mcp.txt
           grep -q "seqera  https://mcp.seqera.io/mcp" codex-mcp.txt
-          expected=$(ls skills | wc -l)
+          expected=$(ls plugins/nextflow/skills | wc -l)
           actual=$(codex debug prompt-input "hi" | grep -o "nextflow:[a-z0-9-]*" | sort -u | wc -l)
           test "$actual" -eq "$expected"
