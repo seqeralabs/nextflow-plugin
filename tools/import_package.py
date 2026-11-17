@@ -224,6 +224,37 @@ def curate_skills() -> None:
     write_json(path, sources)
 
 
+def apply_curated_overlays() -> None:
+    """Replay directory-compatible replacements after upstream curation/consolidation.
+
+    Preserve upstream origin for replaced files; record repository origin for new
+    guides. Overlay assets are authoritative and must be edited with their bundle.
+    """
+    overlays = REPO / "tools" / "curation" / "overlays"
+    sources_path = REPO / "sources.json"
+    sources = json.loads(sources_path.read_text())
+    entries = {entry["path"]: entry for entry in sources["files"]}
+    paths = []
+    for asset in sorted(overlays.rglob("*.md")):
+        rel = asset.relative_to(overlays).as_posix()
+        destination = PLUGIN / rel
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(asset, destination)
+        digest = hashlib.sha256(asset.read_bytes()).hexdigest()
+        entry = entries.get(rel)
+        if entry is None:
+            entry = {"path": rel,
+                     "source": asset.relative_to(REPO).as_posix(),
+                     "source_sha256": digest}
+            sources["files"].append(entry)
+        if entry["source"] == asset.relative_to(REPO).as_posix():
+            entry["source_sha256"] = digest
+        entry.update(bundled_sha256=digest, override=True)
+        paths.append(rel)
+    sources.setdefault("claude_curation", {})["overlay_files"] = paths
+    write_json(sources_path, sources)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("source", type=Path, help="generic package directory or .zip")
@@ -255,6 +286,8 @@ def main() -> None:
             sys.executable, "-I", str(REPO / "tools" / "consolidate_skills.py"),
             "--root", str(PLUGIN), "--sources", str(REPO / "sources.json"),
         ], check=True)
+
+        apply_curated_overlays()
 
         codex = json.loads((package / ".codex-plugin" / "plugin.json").read_text())
 

@@ -561,6 +561,41 @@
       "bundled_sha256": "568daae3ffaef7092ccd578cd630d5d0a5741fecfd2914a59192102902b1b652",
       "override": true,
       "review_preparation_adaptation": true
+    },
+    {
+      "path": "skills/nextflow-development/references/data-type-detection.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/data-type-detection.md",
+      "source_sha256": "e857231def2c32c3c3d6679465f8c0be120a6658f982f51b7dea0021cae3e2aa",
+      "bundled_sha256": "e857231def2c32c3c3d6679465f8c0be120a6658f982f51b7dea0021cae3e2aa",
+      "override": true
+    },
+    {
+      "path": "skills/nextflow-development/references/environment-check.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/environment-check.md",
+      "source_sha256": "600e987a2fdc9d4a85da0f76f143979e04bbf95d8b6e5176cd6835b254b324a5",
+      "bundled_sha256": "600e987a2fdc9d4a85da0f76f143979e04bbf95d8b6e5176cd6835b254b324a5",
+      "override": true
+    },
+    {
+      "path": "skills/nextflow-development/references/reference-genomes.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/reference-genomes.md",
+      "source_sha256": "5069695fe41cd9378709e5e6c6fa5fe3e554757de4127e70860d42a0d9184a47",
+      "bundled_sha256": "5069695fe41cd9378709e5e6c6fa5fe3e554757de4127e70860d42a0d9184a47",
+      "override": true
+    },
+    {
+      "path": "skills/nextflow-development/references/samplesheets.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/samplesheets.md",
+      "source_sha256": "240d7185f9eba16c3f2c741a9335dd795fbae3e1bcf622367f3601400400edcf",
+      "bundled_sha256": "240d7185f9eba16c3f2c741a9335dd795fbae3e1bcf622367f3601400400edcf",
+      "override": true
+    },
+    {
+      "path": "skills/nf-pipeline-design/references/structural-review-checklist.md",
+      "source": "tools/curation/overlays/skills/nf-pipeline-design/references/structural-review-checklist.md",
+      "source_sha256": "0d1478f486b38998a39a310800b029620e67607fc141af42785de4bb90af84cb",
+      "bundled_sha256": "0d1478f486b38998a39a310800b029620e67607fc141af42785de4bb90af84cb",
+      "override": true
     }
   ],
   "portability_cleanup": {
@@ -837,6 +872,17 @@
       "skills/nextflow-development/scripts",
       "skills/nf-pipeline-design/example_pipeline",
       "skills/nf-pipeline-design/scripts"
+    ],
+    "overlay_files": [
+      "skills/nextflow-development/SKILL.md",
+      "skills/nextflow-development/references/data-type-detection.md",
+      "skills/nextflow-development/references/environment-check.md",
+      "skills/nextflow-development/references/geo-sra-acquisition.md",
+      "skills/nextflow-development/references/reference-genomes.md",
+      "skills/nextflow-development/references/samplesheets.md",
+      "skills/nf-pipeline-design/SKILL.md",
+      "skills/nf-pipeline-design/references/structural-review-checklist.md",
+      "skills/repair-workflow/SKILL.md"
     ]
   }
 }

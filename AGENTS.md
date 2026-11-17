@@ -5,6 +5,7 @@ A Claude Code and Codex plugin of agent skills ([Agent Skills spec](https://agen
 ## Checks and releases
 
 - Files listed in `sources.json` carry a `bundled_sha256`; their paths are relative to `plugins/nextflow/`. After editing one, update its hash and set `override: true`, then run `python3 -I tools/check_sources.py` (CI runs it too).
+- Directory-compatible replacements live in `tools/curation/overlays/` and replay after import/consolidation. Edit each overlay together with its bundled copy; run `python3 -I -m unittest discover -s tools -p 'test_*.py'` to test both import and consolidation.
 - Releasing: bump `version` in `plugins/nextflow/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `plugins/nextflow/.codex-plugin/plugin.json` and `VERSION` in `tools/import_package.py` together.
 - `plugins/nextflow/` may hold only Markdown, text, JSON, YAML and PNG/JPEG/GIF/WebP/ICO images, with no file starting with `#!`; the Claude plugin directory rejects anything else from unverified organizations. Write helper logic as instructions in a skill's `references/`, not as scripts. `tools/check_sources.py` enforces this.
 - After editing `.github/workflows/`, run `npx actions-up` and `zizmor`.
