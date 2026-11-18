@@ -44,7 +44,7 @@ Read the relevant files and report each violation with its rule ID, file, line a
 | ID | Severity | Rule |
 |---|---|---|
 | NF030 | Warning | Use lowercase `channel.*` factories, not `Channel.*`. |
-| NF031 | Warning | Use `env('PWD')` rather than implicit environment variables such as `${PWD}`. |
+| NF031 | Warning | Read environment variables with `env('NAME')`, not as implicit bare variable references. |
 | NF032 | Error | No `import` statements (disallowed in strict syntax). |
 | NF033 | Error | No `for` or `while` loops; use higher-order operators. |
 | NF034 | Error | No `class` declarations in pipeline scripts; move them to `lib/`. |
