@@ -52,6 +52,8 @@ LICENSE = "Apache-2.0"
 PORTAL_LICENSE = "licenses/portal-BSL-1.1.txt"
 AUTHOR = {"name": "Seqera", "url": "https://seqera.io"}
 PRIVACY_POLICY = "https://seqera.io/privacy-policy/"
+TERMS_OF_SERVICE = "https://seqera.io/legal/terms-of-use/"
+DOCUMENTATION = "https://docs.seqera.io/"
 
 # Version of the Claude plugin. It is released independently of the generic package
 # because the Claude build curates the skill set below; bump it on every release.
@@ -307,6 +309,8 @@ def main() -> None:
         "repository": REPOSITORY,
         "license": LICENSE,
         "privacyPolicyUrl": PRIVACY_POLICY,
+        "termsOfServiceUrl": TERMS_OF_SERVICE,
+        "documentationUrl": DOCUMENTATION,
         "keywords": generic.get("keywords", []),
     })
 
