@@ -30,8 +30,8 @@ jobs:
       - name: Install Claude Code
         run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
 
-      - name: Test skill consolidation
-        run: python3 -I tools/test_consolidate_skills.py
+      - name: Test import and skill consolidation
+        run: python3 -I -m unittest discover -s tools -p 'test_*.py'
 
       - name: Check provenance hashes and manifest versions
         run: python3 -I tools/check_sources.py

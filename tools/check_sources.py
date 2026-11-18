@@ -28,6 +28,12 @@ def main() -> int:
         if digest != entry["bundled_sha256"]:
             errors.append(f"hash mismatch: {entry['path']}")
 
+    for asset in sorted((REPO / "tools/curation/overlays").rglob("*.md")):
+        rel = asset.relative_to(REPO / "tools/curation/overlays")
+        bundled = PLUGIN / rel
+        if not bundled.is_file() or bundled.read_bytes() != asset.read_bytes():
+            errors.append(f"curated overlay differs from bundle: {rel}")
+
     plugin = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text())
     codex = json.loads((PLUGIN / ".codex-plugin" / "plugin.json").read_text())
     marketplace = json.loads((REPO / ".claude-plugin" / "marketplace.json").read_text())
