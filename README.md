@@ -50,7 +50,7 @@ codex plugin add nextflow@nextflow-plugin
 ```
 
 The same repository serves both hosts: Codex reads the Claude marketplace and plugin layout,
-and takes its listing (name, logo, starter prompts) from `.codex-plugin/plugin.json`.
+and takes its listing (name, logo, starter prompts) from `plugins/nextflow/.codex-plugin/plugin.json`.
 
 ### Skills only
 
@@ -86,10 +86,17 @@ MCP configuration.
 | Nextflow Platform | `launch-workflow` (with shared MCP connection reference), `ce-credentials-setup`, `onboard-aws-batch`, `onboard-google-batch`, `onboard-azure-batch`, `onboard-slurm`, `onboard-lsf`, `seqera-data-links`, `seqerakit` |
 | General | `nextflow-development`, `install-nextflow` |
 
+## Repository layout
+
+The plugin itself lives in [`plugins/nextflow/`](plugins/nextflow): its manifests, skills, MCP
+config and icon. That folder holds only Markdown, text, JSON, YAML and images, as the Claude
+plugin directory requires. The repository root holds the marketplace manifest, provenance
+(`sources.json`), maintenance tools and CI.
+
 ## Licensing
 
 Licensed under the [Apache License, Version 2.0](LICENSE). Third-party attributions are in
-[`NOTICE`](NOTICE), and per-file origin is recorded in [`sources.json`](sources.json).
+[`NOTICE`](plugins/nextflow/NOTICE), and per-file origin is recorded in [`sources.json`](sources.json).
 
 The Apache-2.0 license covers the files in this repository. The hosted Seqera MCP server it
 connects to is a separate work, governed by its own license and Seqera's terms of service.
