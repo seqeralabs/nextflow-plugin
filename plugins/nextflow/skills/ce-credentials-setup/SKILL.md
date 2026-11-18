@@ -97,11 +97,15 @@ kubectl cluster-info
 #    do not blindly pin `master`, the file has been renamed historically.
 kubectl apply -f <manifest_url_from_latest_release>
 
-# 3. Get API server URL
-kubectl cluster-info | grep "Kubernetes control plane"
-```
+# 3. Get bearer token (secret name comes from the manifest used in step 2)
+kubectl describe secrets/<token-secret-name> -n <tower-namespace>
 
-The service account token and the cluster CA certificate are secrets. Do not read, print or copy them yourself. Ask the user to retrieve them in their own terminal, following their cluster administrator's process, and to paste them directly into the Seqera Platform credentials form (**Credentials > Add credentials > Kubernetes**). Then ask for the credential name, and look up its ID with `platform_list_credentials`.
+# 4. Get API server URL
+kubectl cluster-info | grep "Kubernetes control plane"
+
+# 5. Get SSL certificate
+kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d
+```
 
 For full procedure including RBAC, storage setup, and troubleshooting: load `kubernetes.md` via the host's file-reading tool.
 
@@ -135,7 +139,23 @@ For full procedure including IAM policies, Forge vs Manual (use Forge unless you
 
 After gathering values, create credentials then CE. Both go through `call_seqera_api` (the authenticated MCP connection handles credentials — never pass auth headers yourself).
 
-Step 1: The user adds the Kubernetes credentials in Seqera Platform themselves (see Quick Setup). Find the credentials ID with `platform_list_credentials`.
+Step 1: Create credentials.
+
+```json
+{
+  "service": "platform",
+  "api_name": "platform_create_credentials",
+  "parameters": {
+    "workspaceId": 12345,
+    "name": "my-k8s-creds",
+    "provider": "k8s",
+    "keys": {
+      "token": "<bearer_token>",
+      "certificate": "<ca_cert_pem>"
+    }
+  }
+}
+```
 
 Step 2: Create compute environment, passing the credentials ID from step 1.
 

@@ -14,7 +14,7 @@ Complete procedure for setting up a Kubernetes compute environment on Nextflow P
 Apply the Seqera launcher manifest:
 
 ```bash
-kubectl apply -f <manifest_url_from_latest_release>
+kubectl apply -f https://raw.githubusercontent.com/seqeralabs/nf-tower-k8s/master/tower-launcher.yml
 ```
 
 This creates:
@@ -66,30 +66,60 @@ kubectl cluster-info | grep "Kubernetes control plane"
 kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
 ```
 
-## 3. Bearer Token and SSL Certificate
+## 3. Get Bearer Token
 
-The service account token and the cluster CA certificate are secrets. Do not
-read, print or copy them yourself, and do not run commands whose output
-contains them.
+### Kubernetes >= 1.24 (TokenRequest API)
 
-Ask the user to:
+```bash
+# Create a long-lived token (recommended for Seqera)
+kubectl create token tower-launcher-sa -n tower-nf --duration=87600h
+```
 
-1. Create a token for the service account from the manifest (`tower-launcher-sa`
-   in namespace `tower-nf` by default) in their own terminal, following the
-   Kubernetes service account token documentation and their cluster
-   administrator's policy on token lifetime.
-2. Copy the cluster CA certificate (the base64-decoded
-   `certificate-authority-data` of their cluster entry, or the certificate file
-   their Kubernetes configuration refers to).
-3. Paste both directly into the Seqera Platform credentials form
-   (**Credentials > Add credentials > Kubernetes**) and tell you the
-   credential name.
+### Kubernetes < 1.24 (Secret-based)
+
+The manifest creates a `tower-launcher-token` secret:
+
+```bash
+kubectl describe secrets/tower-launcher-token -n tower-nf
+# Copy the token value from the output
+```
+
+Or extract programmatically:
+
+```bash
+kubectl get secret tower-launcher-token -n tower-nf \
+  -o jsonpath='{.data.token}' | base64 -d
+```
+
+### Verify Token
 
 Verify the service account's required permissions against the user-selected
 cluster using its trusted certificate and current Kubernetes authentication.
-Do not disable certificate verification to bypass a failure.
+Use the cluster administrator's approved token and certificate handling; do not
+prescribe a certificate location or disable verification to bypass a failure.
 
-## 4. Set Up Persistent Storage
+## 4. Get SSL Certificate
+
+### From kubeconfig (most common)
+
+```bash
+kubectl config view --raw \
+  -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d
+```
+
+### From secret (Kubernetes < 1.24)
+
+```bash
+kubectl get secret tower-launcher-token -n tower-nf \
+  -o jsonpath='{.data.ca\.crt}' | base64 -d
+```
+
+### From a certificate supplied by the user
+
+If the user's Kubernetes configuration refers to a certificate file, inspect
+that actual reference using the available file tools. Do not assume its location.
+
+## 5. Set Up Persistent Storage
 
 Nextflow requires a `ReadWriteMany` PVC for shared work directories.
 
@@ -128,15 +158,23 @@ the user's actual persistent volume claim, and the mount configuration chosen
 for the compute environment. Remove only the temporary test artifacts created
 for this check.
 
-## 5. Find the Credentials in Seqera
+## 6. Create Credentials in Seqera
 
-The user created the Kubernetes credentials in step 3. Discover the
-credential-listing operation with `search_seqera_api`, call
-`platform_list_credentials` through `call_seqera_api`, and take the ID of the
-credential the user named. Do not create Kubernetes credentials with the token
-or certificate yourself.
+Discover the credential-creation operation with `search_seqera_api` and execute it through `call_seqera_api`. The example below describes intent; use the current returned schema, not these illustrative field names:
 
-## 6. Create Compute Environment in Seqera
+```
+platform_create_credentials(
+    workspace_id=<ws_id>,
+    name="k8s-<cluster-name>",
+    provider="k8s",
+    keys={
+        "token": "<bearer_token_from_step_3>",
+        "certificate": "<ca_cert_pem_from_step_4>"
+    }
+)
+```
+
+## 7. Create Compute Environment in Seqera
 
 ```
 platform_create_compute_env(

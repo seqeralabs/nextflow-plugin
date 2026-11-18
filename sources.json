@@ -40,7 +40,7 @@
       "path": "skills/ce-credentials-setup/SKILL.md",
       "source": "portal/backend/src/skills/ce-credentials-setup/SKILL.md",
       "source_sha256": "179ed50da55eb509086eaf9e3228d063bd4d8334c0f8fff38c0f31e0e327e4e9",
-      "bundled_sha256": "759cdb7d9c6bb30f89c898761954c04b7a263f41c6282fd492e4d90276147f01",
+      "bundled_sha256": "f08f46ce58afa13ca971bd974578a388fa6e86851b8263ce2c1db5acb34e27e1",
       "override": true
     },
     {
@@ -54,7 +54,7 @@
       "path": "skills/ce-credentials-setup/references/kubernetes.md",
       "source": "portal/backend/src/skills/ce-credentials-setup/references/kubernetes.md",
       "source_sha256": "1b55a04577e070016fec281df80294ccdc9e738485ce3fd3b82b02502d02af65",
-      "bundled_sha256": "5816f26ac8632194b05d529312279ca7769b943cf6126a39f318d8a41acbfd7b",
+      "bundled_sha256": "2cf64d58f6ab3df54b20133b005799245e15d79b104396af56c285add173be85",
       "override": true
     },
     {
