@@ -46,8 +46,7 @@ def rebase_markdown_links(text: str, old_path: Path, new_path: Path,
     return re.sub(r"(\[[^\]]*\]\()([^\s)]+)\)", relocate, text)
 
 
-def apply_consolidations(root: Path, plan: dict, assets: Path) -> None:
-    sources_path = root / "sources.json"
+def apply_consolidations(root: Path, plan: dict, assets: Path, sources_path: Path) -> None:
     sources = json.loads(sources_path.read_text())
     entries = {entry["path"]: entry for entry in sources["files"]}
     edited = set(sources["claude_curation"]["edited_files"])
@@ -161,10 +160,12 @@ def apply_consolidations(root: Path, plan: dict, assets: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
+    repo = Path(__file__).resolve().parent.parent
+    parser.add_argument("--root", type=Path, default=repo / "plugins" / "nextflow", help="plugin directory holding skills/")
+    parser.add_argument("--sources", type=Path, default=repo / "sources.json", help="provenance file; paths are relative to --root")
     parser.add_argument("--plan", type=Path, default=PLAN)
     args = parser.parse_args()
-    apply_consolidations(args.root.resolve(), json.loads(args.plan.read_text()), args.plan.parent)
+    apply_consolidations(args.root.resolve(), json.loads(args.plan.read_text()), args.plan.parent, args.sources.resolve())
 
 
 if __name__ == "__main__":

@@ -292,176 +292,8 @@
       "path": "skills/nf-pipeline-design/SKILL.md",
       "source": "portal/backend/src/skills/nf-pipeline-design/SKILL.md",
       "source_sha256": "580d7f415a3a267fc2bd23da92848281b4cc32974a14c978b3395bdcfa6a4645",
-      "bundled_sha256": "c399ca5043d70a869049e2509a55ae254e9f39ca22a235ce47c1cdd55e606b3d",
+      "bundled_sha256": "f3c98bd351ce60ef963cb3b0fad2b7be5f8ae9eddb56e6be87c0319598543dee",
       "override": true
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/conf/base.config",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/conf/base.config",
-      "source_sha256": "3d2215a9e3d7891bc86fcad2d425507a3a41e5ddd6e952445394cd224e1046e0",
-      "bundled_sha256": "3d2215a9e3d7891bc86fcad2d425507a3a41e5ddd6e952445394cd224e1046e0",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/data/sample.fasta",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/data/sample.fasta",
-      "source_sha256": "72768f01a2fdaa96af467b1f541df476de6dbe6e25ccb1694a53ecc37620b2b0",
-      "bundled_sha256": "72768f01a2fdaa96af467b1f541df476de6dbe6e25ccb1694a53ecc37620b2b0",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/main.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/main.nf",
-      "source_sha256": "cae1cc02851045c6f2cc77d0069763e7c619aa2399a63e2180985b5aca8383c9",
-      "bundled_sha256": "cae1cc02851045c6f2cc77d0069763e7c619aa2399a63e2180985b5aca8383c9",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/modules/local/compute_gc_content.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/modules/local/compute_gc_content.nf",
-      "source_sha256": "bbeb1bd799f0af5b05e353b8e02130d0540213c72e20f388810460a17d908036",
-      "bundled_sha256": "bbeb1bd799f0af5b05e353b8e02130d0540213c72e20f388810460a17d908036",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/modules/local/compute_kmer_profile.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/modules/local/compute_kmer_profile.nf",
-      "source_sha256": "7ed21a4404e10886d8d6fbaa7f8d7d0bfea004f1a0deec8db5679710db74f4e8",
-      "bundled_sha256": "7ed21a4404e10886d8d6fbaa7f8d7d0bfea004f1a0deec8db5679710db74f4e8",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/modules/local/generate_summary.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/modules/local/generate_summary.nf",
-      "source_sha256": "1a210433f1711593a556c24312ce9eb825711c7efa3495c91ef4bc59e0279f51",
-      "bundled_sha256": "1a210433f1711593a556c24312ce9eb825711c7efa3495c91ef4bc59e0279f51",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/modules/local/render_report.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/modules/local/render_report.nf",
-      "source_sha256": "a773bb54bfbaa1f436cdb13405b37053d53aa23a3b284c116763ed380f195a72",
-      "bundled_sha256": "a773bb54bfbaa1f436cdb13405b37053d53aa23a3b284c116763ed380f195a72",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/modules/local/split_fasta.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/modules/local/split_fasta.nf",
-      "source_sha256": "67d46720f6704b818bb663a022861784e269835c07ca708b8f7b1f17c7e3e516",
-      "bundled_sha256": "67d46720f6704b818bb663a022861784e269835c07ca708b8f7b1f17c7e3e516",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/modules/local/validate_sequence.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/modules/local/validate_sequence.nf",
-      "source_sha256": "ea79a0ada15120e5c176364ab18cd589d9814f24475f9d03ca77807251170aea",
-      "bundled_sha256": "ea79a0ada15120e5c176364ab18cd589d9814f24475f9d03ca77807251170aea",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/nextflow.config",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/nextflow.config",
-      "source_sha256": "e7bcd8fe6eb00836bd227dd3c1b81cc63efd713de629db02491baaf7717e0e21",
-      "bundled_sha256": "e7bcd8fe6eb00836bd227dd3c1b81cc63efd713de629db02491baaf7717e0e21",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/nextflow_schema.json",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/nextflow_schema.json",
-      "source_sha256": "6822d9b7abce663ecbfb406e3396652884a13e8ba89b1d13e1fe7ac38b27163e",
-      "bundled_sha256": "6822d9b7abce663ecbfb406e3396652884a13e8ba89b1d13e1fe7ac38b27163e",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/subworkflows/local/analyze_gc.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/subworkflows/local/analyze_gc.nf",
-      "source_sha256": "4f0f7b0440abe07a8cbd19bc0d5e7a8c0e12e6d0487ff1e673363ce06a012b3f",
-      "bundled_sha256": "4f0f7b0440abe07a8cbd19bc0d5e7a8c0e12e6d0487ff1e673363ce06a012b3f",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/subworkflows/local/analyze_kmer.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/subworkflows/local/analyze_kmer.nf",
-      "source_sha256": "289b69f195b821d8df5b3ee27a795cf114411302bfefbb194db31a298f22cc57",
-      "bundled_sha256": "289b69f195b821d8df5b3ee27a795cf114411302bfefbb194db31a298f22cc57",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/subworkflows/local/generate_report_summary.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/subworkflows/local/generate_report_summary.nf",
-      "source_sha256": "14929a80a2f84c9d4bf018cc4751043db1126d1af066d5f09507ebdfc53ce9d8",
-      "bundled_sha256": "14929a80a2f84c9d4bf018cc4751043db1126d1af066d5f09507ebdfc53ce9d8",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/subworkflows/local/render_report_doc.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/subworkflows/local/render_report_doc.nf",
-      "source_sha256": "036d38b359e8be8b8f6dfdfc94a15957808d2a13de772ee14b5e8e1fe4b2f6e8",
-      "bundled_sha256": "036d38b359e8be8b8f6dfdfc94a15957808d2a13de772ee14b5e8e1fe4b2f6e8",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/subworkflows/local/split_input_fasta.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/subworkflows/local/split_input_fasta.nf",
-      "source_sha256": "74ca5d48adc97382248c97ae2b54d7375ced4477febe3b7034520db7f143b216",
-      "bundled_sha256": "74ca5d48adc97382248c97ae2b54d7375ced4477febe3b7034520db7f143b216",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/example_pipeline/subworkflows/local/validate_sequences.nf",
-      "source": "portal/backend/src/skills/nf-pipeline-design/example_pipeline/subworkflows/local/validate_sequences.nf",
-      "source_sha256": "0fa4d86f709328ea625e1f6ec5194fb06df3b37d62c937246f3fdf08de62798b",
-      "bundled_sha256": "0fa4d86f709328ea625e1f6ec5194fb06df3b37d62c937246f3fdf08de62798b",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/nflint/__init__.py",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/nflint/__init__.py",
-      "source_sha256": "c6b30f05c489fc0ca314d5f6cd80e66b93520ac60be24bbb50b414b620a9a99e",
-      "bundled_sha256": "c6b30f05c489fc0ca314d5f6cd80e66b93520ac60be24bbb50b414b620a9a99e",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/nflint/__main__.py",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/nflint/__main__.py",
-      "source_sha256": "3129adff95e0f38b87ab34cddfc27082c7892bcaec267ff5d40f160fdf55b44a",
-      "bundled_sha256": "3129adff95e0f38b87ab34cddfc27082c7892bcaec267ff5d40f160fdf55b44a",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/nflint/cli.py",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/nflint/cli.py",
-      "source_sha256": "9f96782d61760f5aa3b253f7783e10ff2dc6b892e55e27fc02e86a87dbb191bd",
-      "bundled_sha256": "9f96782d61760f5aa3b253f7783e10ff2dc6b892e55e27fc02e86a87dbb191bd",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/nflint/issues.py",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/nflint/issues.py",
-      "source_sha256": "e38190270c522ce1dbeece28ba19458af620de2dae4b6016c8bd5f24e0cdae6c",
-      "bundled_sha256": "e38190270c522ce1dbeece28ba19458af620de2dae4b6016c8bd5f24e0cdae6c",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/nflint/parser.py",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/nflint/parser.py",
-      "source_sha256": "c0a8abd7681af7c312b318c0d3d9d8f597e1a359312b1beca93016b7aebf382e",
-      "bundled_sha256": "c0a8abd7681af7c312b318c0d3d9d8f597e1a359312b1beca93016b7aebf382e",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/nflint/rules.py",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/nflint/rules.py",
-      "source_sha256": "c0b8c22f980b396e75ab7b79be7ca604976ad15826bc52700e9159fed65e344e",
-      "bundled_sha256": "c0b8c22f980b396e75ab7b79be7ca604976ad15826bc52700e9159fed65e344e",
-      "override": false
-    },
-    {
-      "path": "skills/nf-pipeline-design/scripts/pyproject.toml",
-      "source": "portal/backend/src/skills/nf-pipeline-design/scripts/pyproject.toml",
-      "source_sha256": "0d58f79e79b503ce31e6ab1c029410ac0011e62162f8ba573b804179c5232295",
-      "bundled_sha256": "0d58f79e79b503ce31e6ab1c029410ac0011e62162f8ba573b804179c5232295",
-      "override": false
     },
     {
       "path": "skills/nf-plugin-development/SKILL.md",
@@ -523,7 +355,7 @@
       "path": "skills/repair-workflow/SKILL.md",
       "source": "portal/backend/src/skills/repair-workflow/SKILL.md",
       "source_sha256": "43567947449b6dcd44c34bded2a44c93826d42fd703c71576fdca3780e39d72a",
-      "bundled_sha256": "6df5f9bc991af39d9adf1a827111ca290aa56ed6c794eea8c872cff807db6faa",
+      "bundled_sha256": "ac03daeb3bcc1193d83f6262c0afb5d382fe7189fa5fe4643fd70c13683075d4",
       "override": true
     },
     {
@@ -565,15 +397,15 @@
       "path": "skills/nextflow-development/SKILL.md",
       "source": "bio-research/nextflow-development/SKILL.md",
       "source_sha256": "f30017df5d499427a701ec6cedfc5c9948ca3bd04ee1a2b6a585a29cd93ad0d7",
-      "bundled_sha256": "bcf6ba30540700750b754248e592d5d8fdddfcf1c61b44eb5d6fbea7e4db7d08",
+      "bundled_sha256": "86c71d6f03cdf670c28fff00a5e45d2912ce94f81019f830efd24a9b8be7139d",
       "override": true
     },
     {
       "path": "skills/nextflow-development/references/geo-sra-acquisition.md",
       "source": "bio-research/nextflow-development/references/geo-sra-acquisition.md",
       "source_sha256": "85238c3bf2c43d2ca5ad8c4fb4418927ff3443bf8993813925a188a1c287d170",
-      "bundled_sha256": "a9699355e902a8910c493fd2c5c030fa6e2117e9054c129d63ca55ef9f08f5c6",
-      "override": false
+      "bundled_sha256": "29c4d2b842da148e0421954723ff60c2adab7e2ffcb71d7a98e71b6415b5843c",
+      "override": true
     },
     {
       "path": "skills/nextflow-development/references/installation.md",
@@ -611,101 +443,31 @@
       "override": false
     },
     {
-      "path": "skills/nextflow-development/scripts/check_environment.py",
-      "source": "bio-research/nextflow-development/scripts/check_environment.py",
-      "source_sha256": "71fac73709a8bc7215af8b4f204b93a12fe2a526512591dffb21b267239bcf9d",
-      "bundled_sha256": "95e1af46f55fdd4c0f3e81cca7a0f127f8e696ab4fc9c0c5d9ecbe9476ac2ed2",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/config/genomes.yaml",
+      "path": "skills/nextflow-development/references/config/genomes.yaml",
       "source": "bio-research/nextflow-development/scripts/config/genomes.yaml",
       "source_sha256": "940bd833b87542a25705668a3ba8f157ea25fcb698f654f2d410efd410fa4172",
       "bundled_sha256": "940bd833b87542a25705668a3ba8f157ea25fcb698f654f2d410efd410fa4172",
       "override": false
     },
     {
-      "path": "skills/nextflow-development/scripts/config/pipelines/atacseq.yaml",
+      "path": "skills/nextflow-development/references/config/pipelines/atacseq.yaml",
       "source": "bio-research/nextflow-development/scripts/config/pipelines/atacseq.yaml",
       "source_sha256": "fb63a0f76fec6b71303e8a58bba8c4c38a56ee533784d438953fe5e394444158",
       "bundled_sha256": "fb63a0f76fec6b71303e8a58bba8c4c38a56ee533784d438953fe5e394444158",
       "override": false
     },
     {
-      "path": "skills/nextflow-development/scripts/config/pipelines/rnaseq.yaml",
+      "path": "skills/nextflow-development/references/config/pipelines/rnaseq.yaml",
       "source": "bio-research/nextflow-development/scripts/config/pipelines/rnaseq.yaml",
       "source_sha256": "8df7b123fc64328aa4b97d047b316cdbaf4622d89684dfd0b6aca5a5da263f5a",
       "bundled_sha256": "8df7b123fc64328aa4b97d047b316cdbaf4622d89684dfd0b6aca5a5da263f5a",
       "override": false
     },
     {
-      "path": "skills/nextflow-development/scripts/config/pipelines/sarek.yaml",
+      "path": "skills/nextflow-development/references/config/pipelines/sarek.yaml",
       "source": "bio-research/nextflow-development/scripts/config/pipelines/sarek.yaml",
       "source_sha256": "03a904ab4a5f3de216200b60646f58faa37416d4bafda6289fcca91caf1c4f2f",
       "bundled_sha256": "03a904ab4a5f3de216200b60646f58faa37416d4bafda6289fcca91caf1c4f2f",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/detect_data_type.py",
-      "source": "bio-research/nextflow-development/scripts/detect_data_type.py",
-      "source_sha256": "68d597921f1c408ae79ece1f8dbab5df8f2fb3328a4c89fee716aac3c4799f4e",
-      "bundled_sha256": "260b5397620a9352f104be8cad1f12d8bfb1a22bc37bcd63d0e7592c34071bfd",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/generate_samplesheet.py",
-      "source": "bio-research/nextflow-development/scripts/generate_samplesheet.py",
-      "source_sha256": "14a4acb03e08369ea9d73de872b20e3578bcd3eec7bbfa03c2df6adcf5eacbf1",
-      "bundled_sha256": "14a4acb03e08369ea9d73de872b20e3578bcd3eec7bbfa03c2df6adcf5eacbf1",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/manage_genomes.py",
-      "source": "bio-research/nextflow-development/scripts/manage_genomes.py",
-      "source_sha256": "d27e36e0c442b081ef7e60d426c037967afec97e441e8fd7ae0a5e436b64e863",
-      "bundled_sha256": "d27e36e0c442b081ef7e60d426c037967afec97e441e8fd7ae0a5e436b64e863",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/sra_geo_fetch.py",
-      "source": "bio-research/nextflow-development/scripts/sra_geo_fetch.py",
-      "source_sha256": "0bd4f292350b47b71e0048a223ca50ebdde0ced1f33d5661daf756c73d1b5a31",
-      "bundled_sha256": "0bd4f292350b47b71e0048a223ca50ebdde0ced1f33d5661daf756c73d1b5a31",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/utils/__init__.py",
-      "source": "bio-research/nextflow-development/scripts/utils/__init__.py",
-      "source_sha256": "4ef421fc4ad6f13aafc0c34e8c92cf3463cebb0c9f7732d2b9ff876c5cd4d89c",
-      "bundled_sha256": "4ef421fc4ad6f13aafc0c34e8c92cf3463cebb0c9f7732d2b9ff876c5cd4d89c",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/utils/file_discovery.py",
-      "source": "bio-research/nextflow-development/scripts/utils/file_discovery.py",
-      "source_sha256": "3540e5411b1bf52e017a1636a127c4f52392f5e888e0ace47361e4c29e3ef380",
-      "bundled_sha256": "3540e5411b1bf52e017a1636a127c4f52392f5e888e0ace47361e4c29e3ef380",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/utils/ncbi_utils.py",
-      "source": "bio-research/nextflow-development/scripts/utils/ncbi_utils.py",
-      "source_sha256": "bfed0a0570f3344036277867c3e69fb6136ae87040ed2640d5b62919a046cfc8",
-      "bundled_sha256": "bfed0a0570f3344036277867c3e69fb6136ae87040ed2640d5b62919a046cfc8",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/utils/sample_inference.py",
-      "source": "bio-research/nextflow-development/scripts/utils/sample_inference.py",
-      "source_sha256": "3f2dcebbc540fa76e9285dd247cb0d6922d4fbe2588b7f7b3ad7ac7ab82b63af",
-      "bundled_sha256": "1faaaaa3488ec16c8cd12a704547d8f168688d4b833b6c3e37c631e564472211",
-      "override": false
-    },
-    {
-      "path": "skills/nextflow-development/scripts/utils/validators.py",
-      "source": "bio-research/nextflow-development/scripts/utils/validators.py",
-      "source_sha256": "2572671195244a3ac7e67a6ebe4c44bbd541fbaa1afe3ebab1f81a46b29feea1",
-      "bundled_sha256": "68d0823c95f113572e5c59e4a39e71b615e4a9ac567a8a090e0284215fe5be39",
       "override": false
     },
     {
@@ -799,6 +561,41 @@
       "bundled_sha256": "568daae3ffaef7092ccd578cd630d5d0a5741fecfd2914a59192102902b1b652",
       "override": true,
       "review_preparation_adaptation": true
+    },
+    {
+      "path": "skills/nextflow-development/references/data-type-detection.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/data-type-detection.md",
+      "source_sha256": "e857231def2c32c3c3d6679465f8c0be120a6658f982f51b7dea0021cae3e2aa",
+      "bundled_sha256": "e857231def2c32c3c3d6679465f8c0be120a6658f982f51b7dea0021cae3e2aa",
+      "override": true
+    },
+    {
+      "path": "skills/nextflow-development/references/environment-check.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/environment-check.md",
+      "source_sha256": "600e987a2fdc9d4a85da0f76f143979e04bbf95d8b6e5176cd6835b254b324a5",
+      "bundled_sha256": "600e987a2fdc9d4a85da0f76f143979e04bbf95d8b6e5176cd6835b254b324a5",
+      "override": true
+    },
+    {
+      "path": "skills/nextflow-development/references/reference-genomes.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/reference-genomes.md",
+      "source_sha256": "5069695fe41cd9378709e5e6c6fa5fe3e554757de4127e70860d42a0d9184a47",
+      "bundled_sha256": "5069695fe41cd9378709e5e6c6fa5fe3e554757de4127e70860d42a0d9184a47",
+      "override": true
+    },
+    {
+      "path": "skills/nextflow-development/references/samplesheets.md",
+      "source": "tools/curation/overlays/skills/nextflow-development/references/samplesheets.md",
+      "source_sha256": "240d7185f9eba16c3f2c741a9335dd795fbae3e1bcf622367f3601400400edcf",
+      "bundled_sha256": "240d7185f9eba16c3f2c741a9335dd795fbae3e1bcf622367f3601400400edcf",
+      "override": true
+    },
+    {
+      "path": "skills/nf-pipeline-design/references/structural-review-checklist.md",
+      "source": "tools/curation/overlays/skills/nf-pipeline-design/references/structural-review-checklist.md",
+      "source_sha256": "0d1478f486b38998a39a310800b029620e67607fc141af42785de4bb90af84cb",
+      "bundled_sha256": "0d1478f486b38998a39a310800b029620e67607fc141af42785de4bb90af84cb",
+      "override": true
     }
   ],
   "portability_cleanup": {
@@ -1004,6 +801,7 @@
       "skills/nextflow-config/SKILL.md",
       "skills/nextflow-config/references/config-options.md",
       "skills/nextflow-development/SKILL.md",
+      "skills/nextflow-development/references/geo-sra-acquisition.md",
       "skills/nextflow-history/SKILL.md",
       "skills/nextflow-history/references/nf-run-history/README.md",
       "skills/nextflow-output-patterns/SKILL.md",
@@ -1067,6 +865,24 @@
         "from": "seqera-mcp",
         "to": "launch-workflow"
       }
+    ],
+    "removed_paths": [
+      "assets/nextflow.svg",
+      "skills/nextflow-development/requirements.txt",
+      "skills/nextflow-development/scripts",
+      "skills/nf-pipeline-design/example_pipeline",
+      "skills/nf-pipeline-design/scripts"
+    ],
+    "overlay_files": [
+      "skills/nextflow-development/SKILL.md",
+      "skills/nextflow-development/references/data-type-detection.md",
+      "skills/nextflow-development/references/environment-check.md",
+      "skills/nextflow-development/references/geo-sra-acquisition.md",
+      "skills/nextflow-development/references/reference-genomes.md",
+      "skills/nextflow-development/references/samplesheets.md",
+      "skills/nf-pipeline-design/SKILL.md",
+      "skills/nf-pipeline-design/references/structural-review-checklist.md",
+      "skills/repair-workflow/SKILL.md"
     ]
   }
 }
