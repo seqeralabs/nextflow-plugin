@@ -11,6 +11,8 @@
   "repository": "https://github.com/seqeralabs/nextflow-plugin",
   "license": "Apache-2.0",
   "privacyPolicyUrl": "https://seqera.io/privacy-policy/",
+  "termsOfServiceUrl": "https://seqera.io/legal/terms-of-use/",
+  "documentationUrl": "https://docs.seqera.io/",
   "keywords": [
     "nextflow",
     "seqera",

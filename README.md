@@ -86,6 +86,27 @@ MCP configuration.
 | Nextflow Platform | `launch-workflow` (with shared MCP connection reference), `ce-credentials-setup`, `seqera-data-links`, `seqerakit` |
 | General | `nextflow-development`, `install-nextflow` |
 
+## External services
+
+Besides the declared Seqera MCP server (`https://mcp.seqera.io/mcp`), some skills tell the agent
+to contact these services directly. Each is contacted only when the user asks for that task, and
+none receives personal data: requests carry search terms, accession IDs, package names or
+pipeline code.
+
+| Service | Used by | What is sent |
+| --- | --- | --- |
+| Nextflow Registry (`registry.nextflow.io`) | `run-module`, `search-existing-modules`, `build-nextflow-pipeline`, `nf-plugin-development` | Module search queries; module downloads; plugin publishing with the user's registry token |
+| Seqera Wave (`wave.seqera.io`, `community.wave.seqera.io`) | `create-container`, `run-module`, `nf-docker-scripts`, pipeline configs | Conda package lists to build or pull containers |
+| Nextflow Platform API (`api.cloud.seqera.io` or the user's own endpoint) | `nextflow-config` | Run metadata, when the user enables `tower.enabled` in their config |
+| NCBI E-utilities (`eutils.ncbi.nlm.nih.gov`) | `nextflow-development` | GEO/SRA accession lookups |
+| EBI ENA (`www.ebi.ac.uk`, `ftp.sra.ebi.ac.uk`) | `nextflow-development` | Accession lookups; public FASTQ downloads |
+| AWS iGenomes (`ngi-igenomes.s3.amazonaws.com`) | `nextflow-development` | Public reference genome downloads |
+| Nextflow and SDKMAN installers (`get.nextflow.io`, `get.sdkman.io`) | `install-nextflow` | Installer downloads |
+| GitHub and nf-core (`github.com`, `raw.githubusercontent.com`, `nf-co.re`) | `maintain-nf-core-pipeline`, `migrate-nextflow-code`, `ce-credentials-setup` and others | Pipeline, template and manifest downloads |
+
+Pipelines run by Nextflow may contact further services (container registries, cloud storage,
+compute back-ends) that the user configures; those are part of the user's pipeline, not the plugin.
+
 ## Repository layout
 
 The plugin itself lives in [`plugins/nextflow/`](plugins/nextflow): its manifests, skills, MCP
