@@ -75,6 +75,24 @@ Installing skills this way does not configure the Seqera MCP server. For skills 
 Nextflow Platform (e.g. `launch-workflow`), add `https://mcp.seqera.io/mcp` to your agent's
 MCP configuration.
 
+## Optional lint hook
+
+Claude Code can lint Nextflow files once when the agent finishes a turn. The hook is
+[`hooks/hooks.json`](hooks/hooks.json). It stays idle until you opt in, then runs `nextflow lint`
+on uncommitted `.nf` and `.config` files in the git working tree.
+
+Opt in for the current repository:
+
+```bash
+mkdir -p .claude && touch .claude/nextflow-lint-hook
+```
+
+Opt in for every repository from your shell with `NEXTFLOW_LINT_HOOK=1`.
+
+`nextflow` must be on `PATH`. The hook skips silently when Nextflow is not installed. Type
+checking needs Nextflow 26.10 or later. Restart Claude Code after installing the plugin so the
+hook loads.
+
 ## What's included
 
 | Area | Skills |
