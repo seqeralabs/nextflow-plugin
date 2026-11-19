@@ -34,6 +34,8 @@
     "longDescription": "Develop and troubleshoot Nextflow pipelines, migrate scripts and Snakemake workflows, create containers and schemas, run nf-core analyses, and manage Seqera workflows through the production MCP server.",
     "shortDescription": "Nextflow pipelines and Seqera",
     "capabilities": [],
-    "websiteURL": "https://github.com/seqeralabs/nextflow-plugin"
+    "websiteURL": "https://github.com/seqeralabs/nextflow-plugin",
+    "privacyPolicyURL": "https://seqera.io/privacy-policy/",
+    "termsOfServiceURL": "https://seqera.io/legal/terms-of-use/"
   }
 }

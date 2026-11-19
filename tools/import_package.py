@@ -340,6 +340,8 @@ def main() -> None:
     interface["defaultPrompt"] = [rename(prompt) for prompt in interface.get("defaultPrompt", [])]
     interface["developerName"] = AUTHOR["name"]
     interface["websiteURL"] = REPOSITORY
+    interface["privacyPolicyURL"] = PRIVACY_POLICY
+    interface["termsOfServiceURL"] = TERMS_OF_SERVICE
     interface["logo"] = ICON
     interface["composerIcon"] = ICON
     write_json(PLUGIN / ".codex-plugin" / "plugin.json", {
