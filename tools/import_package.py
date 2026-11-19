@@ -358,6 +358,10 @@ def main() -> None:
         "skills": "./skills/",
         "mcpServers": "./.mcp.json",
         "interface": interface,
+        # Review test cases for OpenAI's plugin submission, imported with the ZIP.
+        "extensions": {"com.openai": {
+            "review": json.loads((REPO / "tools" / "curation" / "openai-review.json").read_text()),
+        }},
     })
 
     write_json(PLUGIN / ".mcp.json", {"mcpServers": {"seqera": {"type": "http", "url": MCP_URL}}})
