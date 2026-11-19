@@ -36,6 +36,7 @@
     "capabilities": [],
     "websiteURL": "https://github.com/seqeralabs/nextflow-plugin",
     "privacyPolicyURL": "https://seqera.io/privacy-policy/",
-    "termsOfServiceURL": "https://seqera.io/legal/terms-of-use/"
+    "termsOfServiceURL": "https://seqera.io/legal/terms-of-use/",
+    "supportURL": "https://support.seqera.io/support/home"
   }
 }
