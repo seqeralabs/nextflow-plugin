@@ -65,7 +65,7 @@ Canonical sources to check when updating this section:
 
 ## Verification — always run checks before finishing
 
-At minimum, run **`nextflow lint` against the user-selected pipeline sources** with the target Nextflow version. It catches parse-level and strict-syntax issues: deprecated DSL1 forms, disallowed Groovy constructs, `Channel.*` vs `channel.*`, `import` statements, `${PWD}` implicit env refs, and other strict-syntax violations. Use the lint formatter only after reviewing what it will change.
+At minimum, run **`nextflow lint` against the user-selected pipeline sources** with the target Nextflow version. It catches parse-level and strict-syntax issues: deprecated DSL1 forms, disallowed Groovy constructs, `Channel.*` vs `channel.*`, `import` statements, implicit environment variable references, and other strict-syntax violations. Use the lint formatter only after reviewing what it will change.
 
 Then review the user's selected pipeline against the architectural rules (NF001–NF052) in the [structural review checklist](references/structural-review-checklist.md).
 

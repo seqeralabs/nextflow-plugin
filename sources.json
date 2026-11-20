@@ -222,7 +222,7 @@
       "path": "skills/nextflow-config/references/config-options.md",
       "source": "portal/backend/src/skills/nextflow-config/references/config-options.md",
       "source_sha256": "579dec8305ce40d539b1627dee647ed4ffa0520861847ea60c6dca938ccc0d32",
-      "bundled_sha256": "6daf6043a2d29ee597712b1d0ab75ce15362f0212f8c9f2bc58d90f4fc4a4fb3",
+      "bundled_sha256": "96f37eecd2d17b23248b1896de6dbc222c29cd363dcc21af913004554b8369bb",
       "override": true
     },
     {
@@ -292,7 +292,7 @@
       "path": "skills/nf-pipeline-design/SKILL.md",
       "source": "portal/backend/src/skills/nf-pipeline-design/SKILL.md",
       "source_sha256": "580d7f415a3a267fc2bd23da92848281b4cc32974a14c978b3395bdcfa6a4645",
-      "bundled_sha256": "f3c98bd351ce60ef963cb3b0fad2b7be5f8ae9eddb56e6be87c0319598543dee",
+      "bundled_sha256": "06c7d438536df950bca6f19a1d936b94bf2cbff64f7eace2c388f02e84805ec8",
       "override": true
     },
     {
@@ -594,7 +594,7 @@
       "path": "skills/nf-pipeline-design/references/structural-review-checklist.md",
       "source": "tools/curation/overlays/skills/nf-pipeline-design/references/structural-review-checklist.md",
       "source_sha256": "0d1478f486b38998a39a310800b029620e67607fc141af42785de4bb90af84cb",
-      "bundled_sha256": "0d1478f486b38998a39a310800b029620e67607fc141af42785de4bb90af84cb",
+      "bundled_sha256": "624eda4f62f131ab39bb486b928e060cd754aacf505430f5781c575dd46ad000",
       "override": true
     }
   ],
