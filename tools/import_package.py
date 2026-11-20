@@ -58,7 +58,7 @@ DOCUMENTATION = "https://docs.seqera.io/"
 
 # Version of the Claude plugin. It is released independently of the generic package
 # because the Claude build curates the skill set below; bump it on every release.
-VERSION = "0.2.2"
+VERSION = "0.3.0"
 
 # Skills from the generic package that are not shipped in the Claude plugin.
 EXCLUDED_SKILLS = [
