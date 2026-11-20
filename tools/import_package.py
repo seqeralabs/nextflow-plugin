@@ -53,6 +53,7 @@ PORTAL_LICENSE = "licenses/portal-BSL-1.1.txt"
 AUTHOR = {"name": "Seqera", "url": "https://seqera.io"}
 PRIVACY_POLICY = "https://seqera.io/privacy-policy/"
 TERMS_OF_SERVICE = "https://seqera.io/legal/terms-of-use/"
+SUPPORT = "https://support.seqera.io/support/home"
 DOCUMENTATION = "https://docs.seqera.io/"
 
 # Version of the Claude plugin. It is released independently of the generic package
@@ -340,6 +341,9 @@ def main() -> None:
     interface["defaultPrompt"] = [rename(prompt) for prompt in interface.get("defaultPrompt", [])]
     interface["developerName"] = AUTHOR["name"]
     interface["websiteURL"] = REPOSITORY
+    interface["privacyPolicyURL"] = PRIVACY_POLICY
+    interface["termsOfServiceURL"] = TERMS_OF_SERVICE
+    interface["supportURL"] = SUPPORT
     interface["logo"] = ICON
     interface["composerIcon"] = ICON
     write_json(PLUGIN / ".codex-plugin" / "plugin.json", {
@@ -354,6 +358,10 @@ def main() -> None:
         "skills": "./skills/",
         "mcpServers": "./.mcp.json",
         "interface": interface,
+        # Review test cases for OpenAI's plugin submission, imported with the ZIP.
+        "extensions": {"com.openai": {
+            "review": json.loads((REPO / "tools" / "curation" / "openai-review.json").read_text()),
+        }},
     })
 
     write_json(PLUGIN / ".mcp.json", {"mcpServers": {"seqera": {"type": "http", "url": MCP_URL}}})

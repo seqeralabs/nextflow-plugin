@@ -34,6 +34,63 @@
     "longDescription": "Develop and troubleshoot Nextflow pipelines, migrate scripts and Snakemake workflows, create containers and schemas, run nf-core analyses, and manage Seqera workflows through the production MCP server.",
     "shortDescription": "Nextflow pipelines and Seqera",
     "capabilities": [],
-    "websiteURL": "https://github.com/seqeralabs/nextflow-plugin"
+    "websiteURL": "https://github.com/seqeralabs/nextflow-plugin",
+    "privacyPolicyURL": "https://seqera.io/privacy-policy/",
+    "termsOfServiceURL": "https://seqera.io/legal/terms-of-use/",
+    "supportURL": "https://support.seqera.io/support/home"
+  },
+  "extensions": {
+    "com.openai": {
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Find a Nextflow Registry module for a task",
+              "prompt": "Find an nf-core module in the Nextflow registry for trimming adapters from paired-end Illumina reads, and tell me how to include it in my pipeline.",
+              "tools_triggered": "nextflow_search_modules",
+              "expected_behavior": "Searches the Nextflow Registry, recommends a matching module such as nf-core/trimgalore or nf-core/fastp with a registry link, and shows how to include it as a Nextflow-managed module."
+            },
+            {
+              "description": "Describe a module's inputs and outputs",
+              "prompt": "What are the inputs and outputs of the nf-core/fastqc module?",
+              "tools_triggered": "nextflow_describe_module",
+              "expected_behavior": "Looks up nf-core/fastqc and lists its input tuple (meta map and reads) and its outputs (HTML report, zip archive, versions) with a short explanation of each."
+            },
+            {
+              "description": "Recommend an nf-core pipeline for an analysis",
+              "prompt": "Which nf-core pipeline should I use for bulk RNA-seq differential expression, and what does it need as input?",
+              "tools_triggered": "nextflow_suggest_pipeline, co_scientist_ask",
+              "expected_behavior": "Recommends nf-core/rnaseq for processing raw reads and nf-core/differentialabundance for the differential expression step, and describes the samplesheet and reference inputs each one needs."
+            },
+            {
+              "description": "Build a samplesheet from public sequencing data",
+              "prompt": "Find the sequencing runs for GEO study GSE110004 and make me an nf-core/rnaseq samplesheet for them.",
+              "tools_triggered": "sra_fetch_geo_study, sra_list_runs_detailed",
+              "expected_behavior": "Resolves the GEO study to its SRA runs, reports how many runs were found and whether they are paired- or single-end, and writes an nf-core/rnaseq samplesheet CSV with sample, fastq_1, fastq_2 and strandedness columns."
+            },
+            {
+              "description": "Check recent runs on Seqera Platform",
+              "prompt": "Show me my most recent pipeline runs on Seqera Platform and tell me whether any of them failed.",
+              "tools_triggered": "platform_list_workflows, co_scientist_ask",
+              "expected_behavior": "Lists the signed-in user's recent workflow runs with pipeline name, submission time and status, links each run in Seqera Platform, and states whether any run failed."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Wet-lab protocol, not a pipeline task",
+              "prompt": "What's a good protocol for extracting high-quality RNA from mouse liver tissue?"
+            },
+            {
+              "description": "Simple sequence code with no workflow involved",
+              "prompt": "Write a Python function that returns the reverse complement of a DNA sequence."
+            },
+            {
+              "description": "Biology concept explanation",
+              "prompt": "Explain how CRISPR-Cas9 cuts DNA, in terms a high school biology class would follow."
+            }
+          ]
+        }
+      }
+    }
   }
 }
