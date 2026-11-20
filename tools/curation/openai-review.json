@@ -34,16 +34,16 @@
     ],
     "negative": [
       {
-        "description": "Unrelated request: weather forecast",
-        "prompt": "What's the weather going to be in Barcelona this weekend?"
+        "description": "Wet-lab protocol, not a pipeline task",
+        "prompt": "What's a good protocol for extracting high-quality RNA from mouse liver tissue?"
       },
       {
-        "description": "Unrelated request: translation",
-        "prompt": "Translate this paragraph into French: \"Our team meets every Monday to plan the week ahead.\""
+        "description": "Simple sequence code with no workflow involved",
+        "prompt": "Write a Python function that returns the reverse complement of a DNA sequence."
       },
       {
-        "description": "Unrelated request: writing a cover letter",
-        "prompt": "Write me a cover letter for a marketing manager job."
+        "description": "Biology concept explanation",
+        "prompt": "Explain how CRISPR-Cas9 cuts DNA, in terms a high school biology class would follow."
       }
     ]
   }
